@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <!-- 휠 본체: 위쪽이 밝은 흰 플라스틱 -->
+    <radialGradient id="face" cx="50%" cy="34%" r="70%">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.55" stop-color="#f1f2f4"/>
+      <stop offset="0.85" stop-color="#dfe2e6"/>
+      <stop offset="1" stop-color="#c9cdd3"/>
+    </radialGradient>
+    <!-- 테두리 금속 링 -->
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbfbfc"/>
+      <stop offset="0.5" stop-color="#c3c7cd"/>
+      <stop offset="1" stop-color="#8f949b"/>
+    </linearGradient>
+    <!-- 가운데 버튼 -->
+    <linearGradient id="btn" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#d3d7dc"/>
+    </linearGradient>
+    <linearGradient id="well" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#aeb3ba"/>
+      <stop offset="1" stop-color="#f4f5f7"/>
+    </linearGradient>
+    <radialGradient id="gloss" cx="50%" cy="0%" r="75%">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="glyph" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9da3ab"/>
+      <stop offset="1" stop-color="#b9bec5"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="22"/>
+      <feOffset dy="26"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.45"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="emboss" x="-10%" y="-10%" width="120%" height="130%">
+      <feOffset in="SourceAlpha" dy="3" result="o"/>
+      <feFlood flood-color="#ffffff" flood-opacity="0.9"/>
+      <feComposite in2="o" operator="in" result="hl"/>
+      <feMerge><feMergeNode in="hl"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <circle cx="512" cy="500" r="430" fill="url(#rim)"/>
+    <circle cx="512" cy="500" r="418" fill="url(#face)"/>
+  </g>
+  <!-- 위쪽 광택 -->
+  <ellipse cx="512" cy="250" rx="300" ry="150" fill="url(#gloss)" opacity="0.55"/>
+
+  <!-- 글자·기호 -->
+  <g fill="url(#glyph)" filter="url(#emboss)">
+    <text x="512" y="198" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial" font-weight="700" font-size="74" letter-spacing="6">MENU</text>
+    <!-- 다음 ⏭ -->
+    <path d="M770 466 l46 34 -46 34z M816 466 l46 34 -46 34z M866 466 h14 v68 h-14z"/>
+    <!-- 이전 ⏮ -->
+    <path d="M144 466 h14 v68 h-14z M208 466 l-46 34 46 34z M254 466 l-46 34 46 34z"/>
+    <!-- 재생/일시정지 -->
+    <path d="M452 776 l50 34 -50 34z M524 776 h18 v68 h-18z M556 776 h18 v68 h-18z"/>
+  </g>
+
+  <!-- 가운데 버튼 -->
+  <circle cx="512" cy="500" r="168" fill="url(#well)"/>
+  <circle cx="512" cy="500" r="158" fill="url(#btn)" stroke="#b8bdc4" stroke-width="2"/>
+  <ellipse cx="512" cy="410" rx="110" ry="58" fill="#fff" opacity="0.6"/>
+</svg>

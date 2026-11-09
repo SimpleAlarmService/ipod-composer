@@ -1,0 +1,96 @@
+{
+  "name": "ipod-composer",
+  "version": "0.1.0",
+  "description": "YouTube Music에서 곡을 받아 앨범 커버와 가사를 붙이고 클래식 아이팟에 동기화하는 2010년대 스큐어모픽 앱",
+  "main": "src/main/main.js",
+  "scripts": {
+    "setup": "sh backend/setup.sh",
+    "start": "electron .",
+    "icon": "electron build/render-icon.js",
+    "build:backend": "sh backend/build.sh",
+    "dist": "sh backend/build.sh && electron-builder --mac dmg --arm64"
+  },
+  "keywords": [
+    "ipod",
+    "ipod-classic",
+    "ipod-nano",
+    "itunesdb",
+    "yt-dlp",
+    "youtube-music",
+    "lyrics",
+    "skeuomorphic",
+    "electron"
+  ],
+  "author": "SimpleAlarmService",
+  "license": "AGPL-3.0-or-later",
+  "type": "commonjs",
+  "dependencies": {
+    "node-id3": "^0.2.9"
+  },
+  "devDependencies": {
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0"
+  },
+  "productName": "iPod Composer",
+  "build": {
+    "appId": "app.composer.ipod",
+    "productName": "iPod Composer",
+    "copyright": "Composer contributors",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json",
+      "!**/*.map"
+    ],
+    "extraResources": [
+      {
+        "from": "backend/dist/composer-backend",
+        "to": "backend/composer-backend"
+      }
+    ],
+    "asar": true,
+    "mac": {
+      "category": "public.app-category.music",
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "identity": "-",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "darkModeSupport": false,
+      "extendInfo": {
+        "NSHumanReadableCopyright": "오픈소스: yt-dlp, FFmpeg, pypodlib(iOpenPod), Chromaprint, syncedlyrics, LRCLIB",
+        "NSAppleEventsUsageDescription": "받은 곡을 Apple Music 앱 보관함에 추가해 아이팟 터치·아이폰으로 동기화하려면 Music 앱 제어 권한이 필요합니다."
+      }
+    },
+    "dmg": {
+      "title": "iPod Composer",
+      "iconSize": 110,
+      "contents": [
+        {
+          "x": 150,
+          "y": 190
+        },
+        {
+          "x": 410,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SimpleAlarmService/ipod-composer.git"
+  }
+}

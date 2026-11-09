@@ -1,0 +1,12 @@
+# 의존성·빌드 산출물
+node_modules/
+dist/
+backend/.venv/
+backend/dist/
+backend/.pyi-build/
+build/icon.iconset/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store

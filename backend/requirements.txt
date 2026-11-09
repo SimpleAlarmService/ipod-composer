@@ -1,0 +1,4 @@
+# Composer 아이팟 동기화 백엔드 (Python 3.11+)
+pypodlib[artwork]==0.1.0   # MIT — iOpenPod 엔진: iTunesDB/CDB, hash58/72/AB, ArtworkDB
+syncedlyrics>=1.0.1        # MIT — Musixmatch/NetEase/Megalobiz/Genius 가사
+mutagen>=1.47              # GPL-2.0+ — 태그 읽기
