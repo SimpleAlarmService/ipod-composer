@@ -66,7 +66,7 @@
 
 ### 앱으로 (권장)
 
-1. [Releases](https://github.com/SimpleAlarmService/ipod-composer/releases/latest)에서 `iPod Composer-<버전>-arm64.dmg`를 받아 Applications로 옮깁니다.
+1. [Releases](https://github.com/SimpleAlarmService/ipod-composer/releases/latest)에서 `iPod.Composer-<버전>-arm64.dmg`를 받아 Applications로 옮깁니다.
 2. 음원을 받는 데 필요한 도구를 Homebrew로 설치합니다. 나중 업데이트는 앱의 **도구** 폴더가 챙깁니다.
    ```sh
    brew install yt-dlp ffmpeg chromaprint
