@@ -112,6 +112,9 @@ async function loadLibrary() {
   $('#cntSongs').textContent = state.library.length || '';
   const missing = state.library.filter((t) => !t.hasLyrics && !/\binst\b|\(inst\)/i.test(t.title)).length;
   $('#btnFixLyrics').hidden = !missing;
+  const lowCovers = state.library.filter((t) => t.coverWidth && t.coverWidth < 600).length;
+  $('#btnFixCovers').hidden = !lowCovers;
+  $('#cntBadCovers').textContent = lowCovers;
   const old = state.library.filter((t) => t.videoId && t.master !== state.masterVersion).length;
   $('#btnRemaster').hidden = !old;
   $('#cntRemaster').textContent = old;
@@ -981,6 +984,21 @@ $('#btnRemaster').onclick = async () => {
   toast(`${ids.length}곡을 다시 받는 중입니다. 대기열에서 진행 상황을 볼 수 있습니다.`);
   show('downloads');
 };
+$('#btnFixCovers').onclick = async () => {
+  const btn = $('#btnFixCovers');
+  btn.disabled = true;
+  try {
+    const res = await C.library.fixCovers();
+    const fixed = res.filter((r) => r.fixed).length;
+    state.covers.clear();
+    toast(fixed ? `${fixed}곡의 커버를 앨범 아트로 바꿨습니다. 아이팟에도 반영하려면 다시 동기화하세요.` : '고칠 커버가 없습니다');
+    if (state.view === 'albums') renderAlbums();
+  } catch (e) {
+    toast('커버 고치기 실패: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+};
 $('#btnFixLyrics').onclick = async () => {
   const btn = $('#btnFixLyrics');
   btn.disabled = true;
@@ -1002,7 +1020,7 @@ $('#btnFixLyrics').onclick = async () => {
 C.library.onFixProgress((p) => {
   const el = $('#sbInfo');
   if (p.done) return updateStatus();
-  el.textContent = `가사 찾는 중… (${p.current + 1}/${p.total})`;
+  el.textContent = `${p.kind === 'cover' ? '커버 맞추는 중' : '가사 찾는 중'}… (${p.current + 1}/${p.total})`;
 });
 $('#btnDock').onclick = () => document.body.classList.toggle('app-nodock');
 

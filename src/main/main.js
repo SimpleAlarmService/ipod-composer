@@ -8,7 +8,7 @@ const { parseLrc, setExtraProvider } = require('./lyrics');
 const backend = require('./backend');
 const { Tools } = require('./tools');
 const musicApp = require('./musicapp');
-const { Downloader, checkDeps, refreshLyrics, MASTER_VERSION } = require('./downloader');
+const { Downloader, checkDeps, refreshLyrics, refreshCover, imageDims, MASTER_VERSION } = require('./downloader');
 
 // 앱 이름을 'iPod Composer'로 바꿨지만 설정 폴더는 예전 'Composer' 그대로 쓴다 (설정·가상 기기 유지)
 app.setName('iPod Composer');
@@ -83,7 +83,8 @@ function readEntry(file) {
   const st = fs.statSync(file);
   const c = libCache.get(file);
   if (c && c.mtime === st.mtimeMs) return c.entry;
-  const t = NodeID3.read(file, { exclude: ['APIC', 'SYLT'] }) || {};
+  const t = NodeID3.read(file, { exclude: ['SYLT'] }) || {};
+  const dims = imageDims(t.image?.imageBuffer);
   const [no, count] = String(t.trackNumber || '').split('/');
   const entry = {
     file,
@@ -96,6 +97,7 @@ function readEntry(file) {
     trackCount: Number(count) || 0,
     duration: Number(t.length) / 1000 || probeDuration(file),
     hasLyrics: !!t.unsynchronisedLyrics?.text,
+    coverWidth: dims?.w || 0,
     master: [].concat(t.userDefinedText || []).find((x) => x.description === 'COMPOSER_MASTER')?.value || null,
     videoId: ((t.comment?.text || '').match(/[?&]v=([\w-]{11})/) || [])[1] || null,
     size: st.size,
@@ -367,6 +369,23 @@ app.whenReady().then(() => {
         replaceFile: t.file,
       })
     );
+  });
+  // 저화질·테두리 있는 커버를 앨범 아트로 다시 맞춘다
+  ipcMain.handle('library:fixCovers', async (_e, files) => {
+    const targets = files?.length ? files : listLibrary().map((t) => t.file);
+    const results = [];
+    for (let i = 0; i < targets.length; i++) {
+      send('library:fixProgress', { current: i, total: targets.length, file: targets[i], kind: 'cover' });
+      try {
+        results.push(await refreshCover(targets[i]));
+      } catch (e) {
+        results.push({ file: targets[i], fixed: false, error: e.message });
+      }
+      libCache.delete(targets[i]);
+    }
+    send('library:fixProgress', { current: targets.length, total: targets.length, done: true });
+    send('library:changed');
+    return results;
   });
   ipcMain.handle('library:fixLyrics', async (_e, files) => {
     const targets = files?.length ? files : listLibrary().filter((t) => !t.hasLyrics).map((t) => t.file);

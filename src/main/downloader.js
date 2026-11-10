@@ -59,31 +59,179 @@ async function fetchBuffer(url) {
 }
 
 // 16:9 동영상 썸네일 등은 ffmpeg로 정사각형으로 잘라 1000px JPEG로 만든다
-async function squareCover(buf, workDir) {
+// ---------- 앨범 커버 ----------
+// 1순위: YouTube Music 앨범 아트(googleusercontent, 정사각형, 최대 1200px)
+// 최후의 수단: 동영상 썸네일 — 16:9/4:3 화면 안에 아트가 들어 있어 위아래·좌우에 단색 띠가 있으므로 잘라 낸다
+const isAlbumArt = (u) => /googleusercontent\.com|ggpht\.com/.test(u || '');
+
+function runBuffer(bin, args) {
+  return new Promise((resolve, reject) => {
+    const p = spawn(bin, args, { env: ENV });
+    const chunks = [];
+    let err = '';
+    p.stdout.on('data', (d) => chunks.push(d));
+    p.stderr.on('data', (d) => (err += d));
+    p.on('close', (code) => (code === 0 ? resolve(Buffer.concat(chunks)) : reject(new Error(err.trim()))));
+  });
+}
+
+async function imageSize(file) {
+  const out = await run(which('ffprobe') || 'ffprobe', [
+    '-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', file,
+  ]);
+  const [w, h] = out.trim().split(',').map(Number);
+  return { w, h };
+}
+
+// 가장자리에서 안쪽으로, 거의 한 가지 색으로 된 줄(띠)을 걷어 낸 영역을 찾는다
+async function contentRect(file) {
+  const { w, h } = await imageSize(file);
+  const px = await runBuffer(which('ffmpeg'), ['-v', 'error', '-i', file, '-f', 'rawvideo', '-pix_fmt', 'gray', '-']);
+  if (px.length < w * h) return { x: 0, y: 0, w, h, W: w, H: h };
+  const std = (get, n) => {
+    let s1 = 0;
+    let s2 = 0;
+    for (let i = 0; i < n; i++) {
+      const v = get(i);
+      s1 += v;
+      s2 += v * v;
+    }
+    const m = s1 / n;
+    return Math.sqrt(Math.max(0, s2 / n - m * m));
+  };
+  const LIMIT = 7;
+  let top = 0;
+  let bottom = h - 1;
+  while (top < h * 0.3 && std((i) => px[top * w + i], w) < LIMIT) top++;
+  while (bottom > h * 0.7 && std((i) => px[bottom * w + i], w) < LIMIT) bottom--;
+  const rows = bottom - top + 1;
+  const col = (x) => std((i) => px[(top + i) * w + x], rows);
+  let left = 0;
+  let right = w - 1;
+  while (left < w * 0.3 && col(left) < LIMIT) left++;
+  while (right > w * 0.7 && col(right) < LIMIT) right--;
+  return { x: left, y: top, w: right - left + 1, h: rows, W: w, H: h };
+}
+
+async function squareCover(buf, workDir, { trim = false } = {}) {
   const ffmpeg = which('ffmpeg');
   if (!ffmpeg) return buf;
   const src = path.join(workDir, 'cover_src');
   const dst = path.join(workDir, 'cover.jpg');
   fs.writeFileSync(src, buf);
-  await run(ffmpeg, [
-    '-y', '-loglevel', 'error', '-i', src,
-    '-vf', "crop='min(iw,ih)':'min(iw,ih)',scale='min(1200,iw)':-2",
-    '-q:v', '2', dst,
-  ]);
+  const filters = [];
+  if (trim) {
+    try {
+      const r = await contentRect(src);
+      if (r.w < r.W || r.h < r.H) filters.push(`crop=${r.w}:${r.h}:${r.x}:${r.y}`);
+    } catch (_) {}
+  }
+  filters.push("crop='min(iw,ih)':'min(iw,ih)'", "scale='min(1200,iw)':-2");
+  await run(ffmpeg, ['-y', '-loglevel', 'error', '-i', src, '-vf', filters.join(','), '-q:v', '2', dst]);
   return fs.readFileSync(dst);
 }
 
-async function getCover(meta, workDir) {
-  const urls = [ytm.hiResCover(meta.thumb), meta.thumb].filter(Boolean);
-  if (meta.videoId) urls.push(`https://i.ytimg.com/vi/${meta.videoId}/hqdefault.jpg`);
-  for (const u of urls) {
+async function coverCandidates(meta) {
+  const list = [];
+  const add = (u, trim = false) => u && !list.some((c) => c.u === u) && list.push({ u, trim });
+  const addArt = (u) => {
+    if (!isAlbumArt(u)) return;
+    add(ytm.hiResCover(u));
+    add(u);
+  };
+  addArt(meta.thumb);
+  // 커버 주소가 없거나 동영상 썸네일뿐이면 곡 정보·앨범에서 앨범 아트를 다시 찾는다
+  if (!list.length && meta.videoId) {
     try {
-      const buf = await fetchBuffer(u);
+      const w = await ytm.getWatchInfo(meta.videoId);
+      addArt(w.thumb);
+      if (!list.length && (w.albumBrowseId || meta.albumBrowseId)) {
+        const al = await ytm.getAlbum(w.albumBrowseId || meta.albumBrowseId);
+        addArt(al.thumb);
+      }
+    } catch (_) {}
+  }
+  if (!list.length && meta.albumBrowseId) {
+    try {
+      addArt((await ytm.getAlbum(meta.albumBrowseId)).thumb);
+    } catch (_) {}
+  }
+  // 최후의 수단: 동영상 썸네일 (띠 제거)
+  if (meta.thumb && !isAlbumArt(meta.thumb)) {
+    add(ytm.hiResCover(meta.thumb), true);
+    add(meta.thumb, true);
+  }
+  if (meta.videoId) {
+    add(`https://i.ytimg.com/vi/${meta.videoId}/maxresdefault.jpg`, true);
+    add(`https://i.ytimg.com/vi/${meta.videoId}/hqdefault.jpg`, true);
+  }
+  return list;
+}
+
+async function getCover(meta, workDir) {
+  for (const c of await coverCandidates(meta)) {
+    try {
+      const buf = await fetchBuffer(c.u);
       if (buf.length < 2000) continue; // 빈 플레이스홀더
-      return await squareCover(buf, workDir);
+      return await squareCover(buf, workDir, { trim: c.trim });
     } catch (_) {}
   }
   return null;
+}
+
+// JPEG/PNG 헤더에서 크기만 읽는다 (디코딩 없이)
+function imageDims(buf) {
+  if (!buf || buf.length < 24) return null;
+  if (buf[0] === 0x89 && buf[1] === 0x50) return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
+  if (buf[0] !== 0xff || buf[1] !== 0xd8) return null;
+  let i = 2;
+  while (i + 9 < buf.length) {
+    if (buf[i] !== 0xff) {
+      i++;
+      continue;
+    }
+    const m = buf[i + 1];
+    const len = buf.readUInt16BE(i + 2);
+    if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) {
+      return { h: buf.readUInt16BE(i + 5), w: buf.readUInt16BE(i + 7) };
+    }
+    i += 2 + len;
+  }
+  return null;
+}
+
+// 이미 받은 곡의 커버를 앨범 아트로 다시 맞춘다 (저화질·테두리 있는 커버만)
+async function refreshCover(file, { force = false } = {}) {
+  const t = NodeID3.read(file, { include: ['APIC', 'COMM', 'WXXX'] }) || {};
+  const url = t.comment?.text || [].concat(t.userDefinedUrl || [])[0]?.url || '';
+  const videoId = (url.match(/[?&]v=([\w-]{11})/) || [])[1];
+  if (!videoId) return { file, fixed: false, reason: '원본 주소 없음' };
+  const workDir = fs.mkdtempSync(path.join(os.tmpdir(), 'composer-cover-'));
+  try {
+    const old = t.image?.imageBuffer;
+    let bad = force || !old;
+    if (!bad) {
+      const d = imageDims(old);
+      bad = !d || d.w < 600;
+      if (!bad) {
+        const f = path.join(workDir, 'old');
+        fs.writeFileSync(f, old);
+        const r = await contentRect(f).catch(() => null);
+        bad = !!r && (r.w < r.W * 0.97 || r.h < r.H * 0.97);
+      }
+    }
+    if (!bad) return { file, fixed: false, reason: '이미 괜찮음' };
+    const cover = await getCover({ videoId }, workDir);
+    if (!cover) return { file, fixed: false, reason: '커버를 찾지 못함' };
+    const ok = NodeID3.update(
+      { image: { mime: 'image/jpeg', type: { id: 3, name: 'front cover' }, description: 'Cover', imageBuffer: cover } },
+      file
+    );
+    if (ok !== true) throw new Error('태그 쓰기 실패');
+    return { file, fixed: true, size: imageDims(cover) };
+  } finally {
+    fs.rmSync(workDir, { recursive: true, force: true });
+  }
 }
 
 // ---------- 아이팟용 마스터링 ----------
@@ -127,7 +275,7 @@ const norm = (s) => (s || '').toLowerCase().replace(/\(.*?\)|\[.*?\]|[\s\-_.,'"!
 // 앨범 정보가 없는 곡(뮤직비디오·URL 입력)을 앨범 트랙에 매칭한다
 async function enrichMeta(meta, log) {
   let m = { ...meta };
-  if (!m.title || !m.artist || !m.album) {
+  if (!m.title || !m.artist || !m.album || !m.thumb) {
     try {
       const w = await ytm.getWatchInfo(m.videoId);
       m = {
@@ -417,4 +565,4 @@ function addBinDir(dir) {
   if (!ENV.PATH.split(":").includes(dir)) ENV.PATH = dir + ":" + ENV.PATH;
 }
 
-module.exports = { Downloader, checkDeps, refreshLyrics, encodeForIpod, measureTruePeak, MASTER_VERSION, which, run, ENV, addBinDir };
+module.exports = { Downloader, checkDeps, refreshLyrics, refreshCover, imageDims, squareCover, contentRect, encodeForIpod, measureTruePeak, MASTER_VERSION, which, run, ENV, addBinDir };

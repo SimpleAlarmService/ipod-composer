@@ -1,6 +1,6 @@
 {
   "name": "ipod-composer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "YouTube Music에서 곡을 받아 앨범 커버와 가사를 붙이고 클래식 아이팟에 동기화하는 2010년대 스큐어모픽 앱",
   "main": "src/main/main.js",
   "scripts": {

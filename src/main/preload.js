@@ -27,6 +27,7 @@ contextBridge.exposeInMainWorld('composer', {
     reveal: inv('library:reveal'),
     trash: inv('library:trash'),
     fixLyrics: inv('library:fixLyrics'),
+    fixCovers: inv('library:fixCovers'),
     remaster: inv('library:remaster'),
     onFixProgress: on('library:fixProgress'),
     onChanged: on('library:changed'),
