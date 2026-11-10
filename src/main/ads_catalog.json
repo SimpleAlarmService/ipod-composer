@@ -19,6 +19,15 @@
   "desc": "눈을 가린 회사원들이 줄지어 절벽으로 걸어갑니다. 1984의 후속작으로 기대를 모았지만, 지나치게 어둡다는 평을 들은 비운의 슈퍼볼 광고입니다."
  },
  {
+  "id": "powerbook-duo",
+  "year": 1992,
+  "title": "PowerBook Duo",
+  "product": "PowerBook Duo",
+  "videoId": "ZvLjqtvVa3s",
+  "query": "Apple PowerBook Duo commercial 1992",
+  "desc": "책처럼 얇은 노트북을 도킹 스테이션에 밀어 넣으면 책상 위 컴퓨터가 됩니다. 들고 다니는 Mac의 새로운 형태를 소개한 광고입니다."
+ },
+ {
   "id": "think-different",
   "year": 1997,
   "title": "Here's to the Crazy Ones",
@@ -37,15 +46,6 @@
   "desc": "반도체 공장의 방진복 차림 캐릭터가 그을린 채 등장합니다. 경쟁사 칩보다 빠르다는 걸 유머로 꼬집은 Power Mac G3 광고입니다."
  },
  {
-  "id": "snail",
-  "year": 1998,
-  "title": "Snail",
-  "product": "Power Mac G3",
-  "videoId": "TpzKpI10CM0",
-  "query": "Snail Apple Commercial Power Mac G3 Pentium",
-  "desc": "등에 칩을 지고 느릿느릿 기어가는 달팽이. Power Mac G3가 얼마나 빠른지 단 한 장면으로 보여 준 비교 광고입니다."
- },
- {
   "id": "imac-goldblum",
   "year": 1998,
   "title": "Chic. Not Geek.",
@@ -56,14 +56,22 @@
   "desc": "반투명한 본다이 블루 iMac 위로 제프 골드블럼의 느긋한 목소리가 흐릅니다. 컴퓨터가 처음으로 '예쁜 물건'이 된 순간입니다."
  },
  {
-  "id": "imac-colors",
-  "year": 1999,
-  "title": "She's a Rainbow",
-  "product": "iMac G3 (5가지 색)",
-  "by": "The Rolling Stones",
-  "videoId": "awZv4Ok4rlc",
-  "query": "iMac Colors She's a Rainbow commercial",
-  "desc": "블루베리, 포도, 탠저린, 라임, 딸기. 다섯 가지 색 iMac이 롤링 스톤스의 노래에 맞춰 차례로 돌아갑니다."
+  "id": "powerbook-g3-steamroller",
+  "year": 1998,
+  "title": "Steamroller",
+  "product": "PowerBook G3",
+  "videoId": "QUgI6aCxXbM",
+  "query": "Apple PowerBook G3 Steamroller commercial 1998",
+  "desc": "거대한 증기 롤러가 굴러와 다른 노트북을 납작하게 밀어 버립니다. PowerBook G3의 성능을 거침없이 과시한 광고입니다."
+ },
+ {
+  "id": "snail",
+  "year": 1998,
+  "title": "Snail",
+  "product": "Power Mac G3",
+  "videoId": "TpzKpI10CM0",
+  "query": "Snail Apple Commercial Power Mac G3 Pentium",
+  "desc": "등에 칩을 지고 느릿느릿 기어가는 달팽이. Power Mac G3가 얼마나 빠른지 단 한 장면으로 보여 준 비교 광고입니다."
  },
  {
   "id": "hal",
@@ -84,6 +92,16 @@
   "desc": "조개껍데기를 닮은 알록달록한 노트북과 선 없는 인터넷. 무선 랜을 대중에게 처음 소개한 노트북의 광고입니다."
  },
  {
+  "id": "imac-colors",
+  "year": 1999,
+  "title": "She's a Rainbow",
+  "product": "iMac G3 (5가지 색)",
+  "by": "The Rolling Stones",
+  "videoId": "awZv4Ok4rlc",
+  "query": "iMac Colors She's a Rainbow commercial",
+  "desc": "블루베리, 포도, 탠저린, 라임, 딸기. 다섯 가지 색 iMac이 롤링 스톤스의 노래에 맞춰 차례로 돌아갑니다."
+ },
+ {
   "id": "first-ipod",
   "year": 2001,
   "title": "첫 번째 iPod 광고",
@@ -92,6 +110,15 @@
   "videoId": "mo-2aDs8160",
   "query": "first iPod commercial 2001 Take California",
   "desc": "방 안에서 음악에 맞춰 춤추는 한 사람. '주머니 속 1,000곡'이 처음 세상에 나온 순간입니다."
+ },
+ {
+  "id": "imac-g4",
+  "year": 2002,
+  "title": "Lamp",
+  "product": "iMac G4",
+  "videoId": "b5P3QDm61go",
+  "query": "Apple iMac G4 Lamp ad 2002",
+  "desc": "해바라기처럼 화면을 들어 올린 iMac G4. 목이 움직이는 스탠드 조명을 닮은 그 디자인을 그대로 이야기로 만든 광고입니다."
  },
  {
   "id": "switch-ellen",
@@ -104,13 +131,14 @@
   "desc": "PC가 숙제를 날려 버린 이야기를 하는 고등학생. 담담한 표정 하나로 인터넷 밈이 된 'Switch' 캠페인의 대표작입니다."
  },
  {
-  "id": "imac-g4",
-  "year": 2002,
-  "title": "Lamp",
-  "product": "iMac G4",
-  "videoId": "b5P3QDm61go",
-  "query": "Apple iMac G4 Lamp ad 2002",
-  "desc": "해바라기처럼 화면을 들어 올린 iMac G4. 목이 움직이는 스탠드 조명을 닮은 그 디자인을 그대로 이야기로 만든 광고입니다."
+  "id": "silhouette-hey-mama",
+  "year": 2003,
+  "title": "Silhouette — Hey Mama",
+  "product": "iPod",
+  "by": "The Black Eyed Peas",
+  "videoId": "nZpavpd5Msw",
+  "query": "iPod silhouette ad Hey Mama Black Eyed Peas",
+  "desc": "형광색 배경, 검은 실루엣, 하얀 이어폰 줄. 지금도 아이팟 하면 떠오르는 바로 그 장면입니다."
  },
  {
   "id": "silhouette-jet",
@@ -121,16 +149,6 @@
   "videoId": "4CPab8U5zTU",
   "query": "Jet iPod commercial Are You Gonna Be My Girl",
   "desc": "형광색 배경 위에서 검은 실루엣이 미친 듯이 춤춥니다. 하얀 이어폰 줄만 빛나는 실루엣 캠페인의 시작을 알린 곡입니다."
- },
- {
-  "id": "silhouette-hey-mama",
-  "year": 2003,
-  "title": "Silhouette — Hey Mama",
-  "product": "iPod",
-  "by": "The Black Eyed Peas",
-  "videoId": "nZpavpd5Msw",
-  "query": "iPod silhouette ad Hey Mama Black Eyed Peas",
-  "desc": "형광색 배경, 검은 실루엣, 하얀 이어폰 줄. 지금도 아이팟 하면 떠오르는 바로 그 장면입니다."
  },
  {
   "id": "silhouette-nerd",
@@ -153,14 +171,13 @@
   "desc": "\"Uno, dos, tres, catorce!\" 실루엣 광고에 밴드가 직접 등장한, 가장 시끄럽고 신나는 30초입니다."
  },
  {
-  "id": "silhouette-technologic",
+  "id": "nano-launch",
   "year": 2005,
-  "title": "Silhouette — Technologic",
-  "product": "iPod",
-  "by": "Daft Punk",
-  "videoId": "t8oE2-5SOYQ",
-  "query": "iPod ad Technologic Daft Punk",
-  "desc": "로봇 목소리의 가사에 맞춰 실루엣이 기계처럼 끊어 춤춥니다. 일렉트로닉 음악과 실루엣이 가장 잘 어울린 편입니다."
+  "title": "iPod nano 데뷔",
+  "product": "iPod nano",
+  "videoId": "J6nTgfS6EiY",
+  "query": "iPod nano commercial 2005",
+  "desc": "연필보다 얇은 아이팟. 미니를 단종시키고 나온 첫 번째 나노의 날렵함을 보여 준 광고입니다."
  },
  {
   "id": "shuffle-jerk-it-out",
@@ -173,23 +190,14 @@
   "desc": "화면 없는 껌 크기의 아이팟. '인생은 랜덤'이라는 메시지와 함께 무명 밴드의 노래를 세계적인 히트곡으로 만들었습니다."
  },
  {
-  "id": "nano-launch",
+  "id": "silhouette-technologic",
   "year": 2005,
-  "title": "iPod nano 데뷔",
-  "product": "iPod nano",
-  "videoId": "J6nTgfS6EiY",
-  "query": "iPod nano commercial 2005",
-  "desc": "연필보다 얇은 아이팟. 미니를 단종시키고 나온 첫 번째 나노의 날렵함을 보여 준 광고입니다."
- },
- {
-  "id": "u2-original",
-  "year": 2006,
-  "title": "Original of the Species",
+  "title": "Silhouette — Technologic",
   "product": "iPod",
-  "by": "U2",
-  "videoId": "RYYVccN2hP8",
-  "query": "U2 Original of the Species iPod commercial",
-  "desc": "U2와 아이팟의 두 번째 만남. 이번에는 컬러 실루엣과 함께 조금 더 서정적인 곡을 골랐습니다."
+  "by": "Daft Punk",
+  "videoId": "t8oE2-5SOYQ",
+  "query": "iPod ad Technologic Daft Punk",
+  "desc": "로봇 목소리의 가사에 맞춰 실루엣이 기계처럼 끊어 춤춥니다. 일렉트로닉 음악과 실루엣이 가장 잘 어울린 편입니다."
  },
  {
   "id": "dylan",
@@ -220,6 +228,16 @@
   "desc": "감기에 걸린 PC가 연신 재채기를 합니다. 바이러스 걱정을 감기에 빗댄 Get a Mac 시리즈 초기작입니다."
  },
  {
+  "id": "u2-original",
+  "year": 2006,
+  "title": "Original of the Species",
+  "product": "iPod",
+  "by": "U2",
+  "videoId": "RYYVccN2hP8",
+  "query": "U2 Original of the Species iPod commercial",
+  "desc": "U2와 아이팟의 두 번째 만남. 이번에는 컬러 실루엣과 함께 조금 더 서정적인 곡을 골랐습니다."
+ },
+ {
   "id": "get-a-mac-security",
   "year": 2007,
   "title": "Get a Mac — Security",
@@ -227,6 +245,24 @@
   "videoId": "MyGUrPxG1iM",
   "query": "Mac Ad Vista Security cancel or allow",
   "desc": "PC 옆에 선 경호원이 매번 묻습니다. \"취소할까요, 허용할까요?\" 끝없는 보안 확인 창을 꼬집은 편입니다."
+ },
+ {
+  "id": "imac-2007",
+  "year": 2007,
+  "title": "새로운 iMac",
+  "product": "iMac (알루미늄)",
+  "videoId": "HF86T0eDmVE",
+  "query": "iMac Commercial 2007 aluminum",
+  "desc": "플라스틱을 벗고 알루미늄과 유리를 입은 iMac. 하얀 배경 위에서 천천히 돌아가는 얇은 옆모습이 전부인 광고입니다."
+ },
+ {
+  "id": "iphone-calamari",
+  "year": 2007,
+  "title": "Calamari",
+  "product": "iPhone",
+  "videoId": "RPUfktj8UU4",
+  "query": "iPhone Commercial Calamari",
+  "desc": "영화를 보다 오징어 튀김이 먹고 싶어진 손가락이 지도를 열고 식당에 전화를 겁니다. iPhone이 할 수 있는 일을 담담하게 보여 준 첫 광고 시리즈입니다."
  },
  {
   "id": "iphone-hello",
@@ -238,13 +274,14 @@
   "desc": "영화 속 배우들이 차례로 전화를 받으며 \"Hello\"라고 말합니다. 2007년 아카데미 시상식에서 첫 iPhone을 알린 몽타주입니다."
  },
  {
-  "id": "iphone-calamari",
+  "id": "mccartney",
   "year": 2007,
-  "title": "Calamari",
-  "product": "iPhone",
-  "videoId": "RPUfktj8UU4",
-  "query": "iPhone Commercial Calamari",
-  "desc": "영화를 보다 오징어 튀김이 먹고 싶어진 손가락이 지도를 열고 식당에 전화를 겁니다. iPhone이 할 수 있는 일을 담담하게 보여 준 첫 광고 시리즈입니다."
+  "title": "Dance Tonight",
+  "product": "iTunes",
+  "by": "Paul McCartney",
+  "videoId": "AWPHR2mRmSM",
+  "query": "iPod Ad Paul McCartney Dance Tonight",
+  "desc": "폴 매카트니가 만돌린을 들고 흥얼거립니다. 비틀스 멤버가 등장한 iTunes 광고입니다."
  },
  {
   "id": "nano-1234",
@@ -265,16 +302,6 @@
   "videoId": "vTnUrCT9j0U",
   "query": "iPod Touch AD CSS music is my hot hot sex",
   "desc": "손가락으로 앨범 커버를 넘기는 커버 플로우. 처음 나온 iPod touch의 멀티터치를 음악과 함께 보여 줬습니다."
- },
- {
-  "id": "mccartney",
-  "year": 2007,
-  "title": "Dance Tonight",
-  "product": "iTunes",
-  "by": "Paul McCartney",
-  "videoId": "AWPHR2mRmSM",
-  "query": "iPod Ad Paul McCartney Dance Tonight",
-  "desc": "폴 매카트니가 만돌린을 들고 흥얼거립니다. 비틀스 멤버가 등장한 iTunes 광고입니다."
  },
  {
   "id": "macbook-air",
@@ -325,13 +352,13 @@
   "desc": "무엇을 하고 싶든 \"그걸 위한 앱이 있어요.\" App Store 시대를 한 문장으로 요약한 캠페인입니다."
  },
  {
-  "id": "ipad",
-  "year": 2010,
-  "title": "첫 번째 iPad 광고",
-  "product": "iPad",
-  "videoId": "-HMrf_uxwi4",
-  "query": "Apple's First iPad Commercial 2010",
-  "desc": "소파에 기대 무릎 위에 올려놓은 커다란 유리판. 처음 보는 기기를 어떻게 쓰는지 손끝으로 보여 줬습니다."
+  "id": "iphone-3gs",
+  "year": 2009,
+  "title": "iPhone 3GS",
+  "product": "iPhone 3GS",
+  "videoId": "4OEgYEJLgts",
+  "query": "iPhone 3GS commercial 2009",
+  "desc": "더 빨라진 iPhone. 손안에서 동영상을 찍고 바로 다듬어 보내는 모습으로 'S'의 의미를 보여 줬습니다."
  },
  {
   "id": "facetime",
@@ -344,6 +371,42 @@
   "desc": "멀리 떨어진 가족과 연인이 화면 너머로 웃습니다. 영상 통화가 일상이 되기 직전의 따뜻한 광고입니다."
  },
  {
+  "id": "imac-2010",
+  "year": 2010,
+  "title": "iMac 27",
+  "product": "iMac",
+  "videoId": "7QIkVGk2yE0",
+  "query": "iMac Ad Commercial 2010",
+  "desc": "커다란 27인치 화면 가득 영화와 사진, 게임이 펼쳐집니다. 거실 TV보다 큰 데스크톱의 시대를 연 광고입니다."
+ },
+ {
+  "id": "ipad",
+  "year": 2010,
+  "title": "첫 번째 iPad 광고",
+  "product": "iPad",
+  "videoId": "-HMrf_uxwi4",
+  "query": "Apple's First iPad Commercial 2010",
+  "desc": "소파에 기대 무릎 위에 올려놓은 커다란 유리판. 처음 보는 기기를 어떻게 쓰는지 손끝으로 보여 줬습니다."
+ },
+ {
+  "id": "ipad-delicious",
+  "year": 2010,
+  "title": "iPad Is Delicious",
+  "product": "iPad",
+  "videoId": "6rBPCqYR43U",
+  "query": "Apple iPad is Delicious ad 2010",
+  "desc": "\"iPad는 맛있다.\" 레시피를 펼치고, 배우고, 즐기는 장면마다 iPad를 한 단어로 정의한 'iPad is…' 캠페인의 한 편입니다."
+ },
+ {
+  "id": "iphone-4-birthday",
+  "year": 2010,
+  "title": "아빠, 생일 축하해!",
+  "product": "iPhone 4 (한국어판)",
+  "videoId": "ebpQuDH7EB0",
+  "query": "Apple iPhone 4 Ad 아빠 생일 축하해 Korean",
+  "desc": "멀리 있는 아이가 화면 너머로 아빠의 생일을 축하합니다. FaceTime을 우리말로 전한 iPhone 4 광고입니다."
+ },
+ {
   "id": "ipad-2",
   "year": 2011,
   "title": "We Believe",
@@ -351,6 +414,52 @@
   "videoId": "cJkNXX9aQeI",
   "query": "Apple iPad 2 TV Ad We Believe",
   "desc": "\"기술만으로는 충분하지 않다.\" 기술과 인문학의 교차점을 이야기한 iPad 2 광고입니다."
+ },
+ {
+  "id": "iphone-4s-korea",
+  "year": 2011,
+  "title": "iPhone 4S",
+  "product": "iPhone 4S (한국어판)",
+  "videoId": "jv8-7c1MIhk",
+  "query": "Apple iPhone 4S Korean Commercial 2011",
+  "desc": "새 카메라로 찍은 사진을 손끝으로 다듬고 바로 나눕니다. 2011년 11월 국내에 방송된 한국어판 iPhone 4S 광고입니다."
+ },
+ {
+  "id": "ipad-mini-piano",
+  "year": 2012,
+  "title": "Piano",
+  "product": "iPad mini",
+  "by": "Hoagy Carmichael - Heart and Soul",
+  "videoId": "6X_3snBKwzA",
+  "query": "iPad mini Piano commercial Heart and Soul",
+  "desc": "iPad와 iPad mini가 나란히 'Heart and Soul'을 연탄합니다. 작아도 손가락 하나 모자라지 않다는 걸 피아노 건반으로 보여 줬습니다."
+ },
+ {
+  "id": "iphone-5-turkey",
+  "year": 2012,
+  "title": "Turkey",
+  "product": "iPhone 5",
+  "videoId": "GRoco8iCH04",
+  "query": "Apple iPhone 5 TV Ad Turkey",
+  "desc": "추수감사절 식탁의 칠면조 사진을 Photo Stream으로 멀리 있는 가족과 나눕니다. 얇아진 iPhone 5로 함께하는 명절 풍경입니다."
+ },
+ {
+  "id": "ipods-2012",
+  "year": 2012,
+  "title": "iPod 라인업",
+  "product": "iPod nano · iPod touch",
+  "videoId": "FLagUNONg5M",
+  "query": "2012 iPod Lineup Ad",
+  "desc": "알록달록한 나노와 터치가 허공에서 회전하며 춤춥니다. 아이팟이 가장 다채로웠던 해의 마지막 라인업 광고입니다."
+ },
+ {
+  "id": "macbook-pro-retina",
+  "year": 2012,
+  "title": "Retina",
+  "product": "MacBook Pro (Retina)",
+  "videoId": "YTtXDptImcQ",
+  "query": "MacBook Pro 2012 retina display official commercial",
+  "desc": "어둠 속에서 빛나는 레티나 디스플레이. 픽셀이 보이지 않는 화면을 처음 단 MacBook Pro의 광고입니다."
  },
  {
   "id": "siri-zooey",
@@ -363,6 +472,42 @@
   "desc": "비 오는 날, 집 안에서 토마토 수프를 시키고 춤을 춥니다. Siri와 나누는 소소한 대화로 음성 비서를 소개했습니다."
  },
  {
+  "id": "designed-by-apple",
+  "year": 2013,
+  "title": "Designed by Apple in California",
+  "product": "Apple",
+  "videoId": "170fh2mvog0",
+  "query": "Apple ad Designed by Apple in California",
+  "desc": "\"이것이 우리의 서명입니다.\" 제품 대신 Apple이 무엇을 위해 만드는지를 이야기한 브랜드 광고입니다."
+ },
+ {
+  "id": "ipad-air-pencil",
+  "year": 2013,
+  "title": "Pencil",
+  "product": "iPad Air",
+  "videoId": "yKn6Atc1vUk",
+  "query": "Apple iPad Air TV AD Pencil",
+  "desc": "연필 한 자루가 지나가자 그 뒤에 숨어 있던 iPad Air가 드러납니다. 얼마나 얇은지 한 장면으로 보여 준 광고입니다."
+ },
+ {
+  "id": "iphone-5c",
+  "year": 2013,
+  "title": "Designed Together",
+  "product": "iPhone 5c · iOS 7",
+  "videoId": "xAusO92PiHA",
+  "query": "iPhone 5C and iOS 7 Designed Together",
+  "desc": "색색의 플라스틱 몸체와 납작해진 iOS 7 아이콘이 함께 춤을 춥니다. 하드웨어와 소프트웨어를 한 몸처럼 디자인했다는 이야기입니다."
+ },
+ {
+  "id": "iphone-5s-gold",
+  "year": 2013,
+  "title": "Gold",
+  "product": "iPhone 5s",
+  "videoId": "DK5KmE7XH-8",
+  "query": "iPhone 5S Champagne Gold TV Ad",
+  "desc": "녹아내린 금속이 흐르고 굳어 샴페인 골드 iPhone이 됩니다. 지문 인식 Touch ID를 처음 단 iPhone 5s의 광고입니다."
+ },
+ {
   "id": "misunderstood",
   "year": 2013,
   "title": "Misunderstood",
@@ -372,13 +517,22 @@
   "desc": "연휴 내내 휴대폰만 들여다보던 소년이 사실은 가족을 찍고 있었습니다. 에미상을 받은 크리스마스 광고입니다."
  },
  {
-  "id": "designed-by-apple",
-  "year": 2013,
-  "title": "Designed by Apple in California",
-  "product": "Apple",
-  "videoId": "170fh2mvog0",
-  "query": "Apple ad Designed by Apple in California",
-  "desc": "\"이것이 우리의 서명입니다.\" 제품 대신 Apple이 무엇을 위해 만드는지를 이야기한 브랜드 광고입니다."
+  "id": "iphone-6",
+  "year": 2014,
+  "title": "Bigger than Bigger",
+  "product": "iPhone 6",
+  "videoId": "LdSRmoEDSek",
+  "query": "Apple iPhone 6 Bigger than Bigger",
+  "desc": "화면이 커진 첫 iPhone. '크다는 것, 그 이상'이라는 문구로 기억되는 iPhone 6의 광고입니다."
+ },
+ {
+  "id": "mac-30",
+  "year": 2014,
+  "title": "Mac 30주년",
+  "product": "Mac",
+  "videoId": "nfLvSKm7scM",
+  "query": "Mac's 30th Anniversary Apple 1.24.14",
+  "desc": "1984년부터 30년. Mac과 함께 일하고 만들어 온 사람들의 하루를 담은 기념 영상입니다."
  },
  {
   "id": "your-verse",
@@ -391,15 +545,6 @@
   "desc": "\"인생이라는 연극은 계속되고, 당신도 한 구절을 보탤 수 있다.\" 로빈 윌리엄스의 목소리 위로 iPad와 함께하는 삶이 펼쳐집니다."
  },
  {
-  "id": "mac-30",
-  "year": 2014,
-  "title": "Mac 30주년",
-  "product": "Mac",
-  "videoId": "nfLvSKm7scM",
-  "query": "Mac's 30th Anniversary Apple 1.24.14",
-  "desc": "1984년부터 30년. Mac과 함께 일하고 만들어 온 사람들의 하루를 담은 기념 영상입니다."
- },
- {
   "id": "frankie",
   "year": 2016,
   "title": "Frankie's Holiday",
@@ -409,13 +554,22 @@
   "desc": "외로운 프랑켄슈타인이 크리스마스 밤 마을 광장에 나타나 노래를 부르기 시작합니다. 다름을 받아들이는 이야기를 담은 연휴 광고입니다."
  },
  {
-  "id": "whats-a-computer",
+  "id": "macbook-pro-touchbar",
+  "year": 2016,
+  "title": "Touch Bar",
+  "product": "MacBook Pro",
+  "videoId": "-cOVmcQHg2I",
+  "query": "Apple MacBook Pro with Touch Bar TV Commercial 2016",
+  "desc": "키보드 위에 빛나는 터치 스트립이 손가락을 따라 바뀝니다. 기능 키를 걷어 낸 MacBook Pro의 광고입니다."
+ },
+ {
+  "id": "imac-pro",
   "year": 2017,
-  "title": "What's a Computer?",
-  "product": "iPad Pro",
-  "videoId": "3S5BLs51yDQ",
-  "query": "iPad Pro What's a computer Apple",
-  "desc": "하루 종일 iPad Pro로 모든 걸 한 아이가 마지막에 묻습니다. \"컴퓨터가 뭔데요?\""
+  "title": "Power to the Pro",
+  "product": "iMac Pro",
+  "videoId": "e9p-L8w0GEA",
+  "query": "iMac Pro Power to the Pro Apple",
+  "desc": "스페이스 그레이 iMac 안에 들어간 18코어 Xeon. 가장 강력한 Mac을 짧고 묵직하게 소개한 광고입니다."
  },
  {
   "id": "sway",
@@ -427,14 +581,13 @@
   "desc": "눈 내리는 거리, AirPods로 같은 노래를 나눠 들은 두 사람이 춤을 춥니다. 아름다운 촬영으로 사랑받은 연휴 광고입니다."
  },
  {
-  "id": "welcome-home",
-  "year": 2018,
-  "title": "Welcome Home",
-  "product": "HomePod",
-  "by": "Spike Jonze 감독 · FKA twigs",
-  "videoId": "Xwc22EK8qE0",
-  "query": "HomePod Welcome Home by Spike Jonze Apple",
-  "desc": "지친 하루 끝, 음악이 흐르자 좁은 방이 늘어나고 벽이 춤추기 시작합니다. 4분짜리 단편 영화 같은 광고입니다."
+  "id": "whats-a-computer",
+  "year": 2017,
+  "title": "What's a Computer?",
+  "product": "iPad Pro",
+  "videoId": "3S5BLs51yDQ",
+  "query": "iPad Pro What's a computer Apple",
+  "desc": "하루 종일 iPad Pro로 모든 걸 한 아이가 마지막에 묻습니다. \"컴퓨터가 뭔데요?\""
  },
  {
   "id": "airpods-bounce",
@@ -464,6 +617,43 @@
   "desc": "Apple Watch가 목숨을 구했다는 사람들의 편지를 직접 읽어 줍니다. 건강 기능을 진짜 이야기로 전한 광고입니다."
  },
  {
+  "id": "iphone-8-red",
+  "year": 2018,
+  "title": "(PRODUCT)RED",
+  "product": "iPhone 8",
+  "videoId": "V95pPeDX2Zw",
+  "query": "iPhone 8 PRODUCT RED Special Edition Commercial",
+  "desc": "새빨간 유리 뒷면이 어둠 속에서 빛납니다. 수익 일부를 에이즈 퇴치 기금에 보탠 (PRODUCT)RED 에디션 광고입니다."
+ },
+ {
+  "id": "iphone-xs",
+  "year": 2018,
+  "title": "Illusion",
+  "product": "iPhone XS · XS Max",
+  "videoId": "YybUphX0Bm0",
+  "query": "iPhone XS Illusion Apple",
+  "desc": "금빛 테두리의 iPhone XS가 착시처럼 겹쳤다 펼쳐집니다. 큰 화면의 XS Max가 처음 함께 나온 해의 광고입니다."
+ },
+ {
+  "id": "macbook-air-2018",
+  "year": 2018,
+  "title": "새로운 MacBook Air",
+  "product": "MacBook Air (Retina)",
+  "videoId": "dAKa4yCqRj4",
+  "query": "Introducing the new MacBook Air 2018 Apple",
+  "desc": "물결치는 천 사이로 얇은 노트북이 미끄러져 나옵니다. 레티나 화면을 달고 돌아온 MacBook Air의 소개 영상입니다."
+ },
+ {
+  "id": "welcome-home",
+  "year": 2018,
+  "title": "Welcome Home",
+  "product": "HomePod",
+  "by": "Spike Jonze 감독 · FKA twigs",
+  "videoId": "Xwc22EK8qE0",
+  "query": "HomePod Welcome Home by Spike Jonze Apple",
+  "desc": "지친 하루 끝, 음악이 흐르자 좁은 방이 늘어나고 벽이 춤추기 시작합니다. 4분짜리 단편 영화 같은 광고입니다."
+ },
+ {
   "id": "privacy",
   "year": 2019,
   "title": "Privacy. That's iPhone.",
@@ -480,6 +670,24 @@
   "videoId": "iX-KpCq-R4Q",
   "query": "Apple at Work The Underdogs",
   "desc": "마감에 쫓기는 네 명의 직장인이 Mac과 iPad로 기적처럼 발표를 해냅니다. 회사 생활을 그린 Apple at Work 시리즈입니다."
+ },
+ {
+  "id": "ipad-air-4",
+  "year": 2020,
+  "title": "새로운 iPad Air",
+  "product": "iPad Air (4세대)",
+  "videoId": "mInd2L8N_c4",
+  "query": "Commercial Apple iPad Air 4 2020",
+  "desc": "다섯 가지 색, 얇은 테두리, 전원 버튼 속 Touch ID. 프로의 디자인을 입은 iPad Air 4세대의 광고입니다."
+ },
+ {
+  "id": "ipad-pro-next-computer",
+  "year": 2020,
+  "title": "Your Next Computer Is Not a Computer",
+  "product": "iPad Pro",
+  "videoId": "lnBqvF4j680",
+  "query": "iPad Pro Your next computer is not a computer Apple",
+  "desc": "\"컴퓨터를 올바르게 쓰는 법\"을 짐짓 진지하게 안내하다가, 결국 iPad Pro 하나로 모든 걸 해냅니다. 다음 컴퓨터는 컴퓨터가 아니라는 광고입니다."
  },
  {
   "id": "the-greatest",
