@@ -309,7 +309,7 @@ $('#searchInput').addEventListener('keydown', async (e) => {
     state.cfIndex = 0;
     renderSearch();
   } catch (err) {
-    const msg = /abort|timeout|fetch failed|network/i.test(err.message) ? 'YouTube Music에 연결하지 못했습니다' : err.message;
+    const msg = /abort|timeout|fetch failed|network/i.test(err.message) ? '스토어에 연결하지 못했습니다' : err.message;
     $('#results').innerHTML = `<div class="paste-hint">검색 실패: ${h(msg)} <button class="pill" id="retrySearch" style="margin-left:8px">다시 시도</button></div>`;
     $('#retrySearch').onclick = () => $('#searchInput').dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
   } finally {
@@ -351,7 +351,7 @@ function trackRows(list, { art = true, no = false } = {}) {
 function renderSearch() {
   const s = state.search;
   if (!s) {
-    $('#results').innerHTML = `<div class="paste-hint">검색창에 아티스트·앨범·곡 이름을 입력하거나 YouTube / YouTube Music 링크(노래·앨범)를 붙여넣고 Return 키를 누르세요.</div>`;
+    $('#results').innerHTML = `<div class="paste-hint">검색창에 아티스트·앨범·곡 이름을 입력하거나 노래·앨범 링크를 붙여넣고 Return 키를 누르세요.</div>`;
     return;
   }
   const cf = $('#coverflow');
@@ -1202,12 +1202,12 @@ $('#searchMode').addEventListener('click', (e) => {
   if (!b) return;
   state.searchMode = b.dataset.mode;
   $$('#searchMode button').forEach((x) => x.classList.toggle('on', x === b));
-  $('#searchInput').placeholder = state.searchMode === 'video' ? 'YouTube 동영상 검색 또는 URL' : 'YouTube Music 검색 또는 URL';
-  $('#searchTitle').textContent = state.searchMode === 'video' ? 'YouTube 동영상' : 'YouTube Music';
+  $('#searchInput').placeholder = state.searchMode === 'video' ? '동영상 검색 또는 링크' : 'iTube Store 검색 또는 링크';
+  $('#searchTitle').textContent = state.searchMode === 'video' ? 'iTube Store 동영상' : 'iTube Store';
   $('#searchSub').textContent =
     state.searchMode === 'video'
       ? '라이브 클립, 뮤직비디오, 무엇이든. 받으면 아이팟에서 볼 수 있는 영상으로 바꿔 둡니다.'
-      : '아티스트, 앨범, 곡 이름을 검색하거나 YouTube 링크를 붙여넣으세요.';
+      : '아티스트, 앨범, 곡 이름을 검색하거나 노래·앨범 링크를 붙여넣으세요.';
   $('#coverflow').hidden = true;
   $('#results').innerHTML = '';
   $('#searchInput').focus();
@@ -1315,7 +1315,7 @@ async function loadVideoLibrary() {
       </div>`
         )
         .join('')
-    : '<div class="vempty">아직 받은 영상이 없습니다. YouTube Music 검색 화면에서 <b>동영상</b>으로 바꿔 찾아보거나, 엑스트라의 <b>Apple 광고</b>를 받아 보세요.</div>';
+    : '<div class="vempty">아직 받은 영상이 없습니다. iTube Store 검색 화면에서 <b>동영상</b>으로 바꿔 찾아보거나, 엑스트라의 <b>Apple 광고</b>를 받아 보세요.</div>';
 }
 $('#vidGrid').addEventListener('click', async (e) => {
   const play = e.target.closest('[data-lplay]');
