@@ -33,6 +33,22 @@ contextBridge.exposeInMainWorld('composer', {
     onChanged: on('library:changed'),
   },
   ios: { devices: inv('ios:devices'), onDevices: on('ios:devices') },
+  videos: {
+    search: inv('videos:search'),
+    download: inv('videos:download'),
+    library: inv('videos:library'),
+    remove: inv('videos:remove'),
+    onUpdate: on('videos:update'),
+    onChanged: on('videos:changed'),
+  },
+  ads: {
+    list: inv('ads:list'),
+    download: inv('ads:download'),
+    remove: inv('ads:remove'),
+    reveal: inv('ads:reveal'),
+    onUpdate: on('ads:update'),
+    onChanged: on('ads:changed'),
+  },
   music: { add: inv('music:add'), onAdded: on('music:added'), onError: on('music:error') },
   ipod: {
     devices: inv('ipod:devices'),

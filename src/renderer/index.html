@@ -66,12 +66,15 @@
         <div class="src-head">보관함</div>
         <a class="src" data-view="songs"><i class="ico ico-note"></i><span>음악</span><em id="cntSongs"></em></a>
         <a class="src" data-view="albums"><i class="ico ico-albums"></i><span>앨범</span></a>
+        <a class="src" data-view="videos"><i class="ico ico-film"></i><span>동영상</span><em id="cntVideos"></em></a>
         <div class="src-head">다운로드</div>
         <a class="src" data-view="downloads"><i class="ico ico-dl"></i><span>대기열</span><em class="badge" id="cntDl" hidden></em></a>
         <div class="src-head">기기</div>
         <div id="deviceList"><div class="src-none">연결된 아이팟 없음</div></div>
         <div id="iosList"></div>
         <a class="src" data-view="applemusic"><i class="ico ico-am"></i><span>Apple Music</span></a>
+        <div class="src-head">엑스트라</div>
+        <a class="src" data-view="ads"><i class="ico ico-film"></i><span>Apple 광고</span></a>
         <div class="src-head">스토어</div>
         <a class="src" data-view="search"><i class="ico ico-store"></i><span>YouTube Music</span></a>
         <div class="sidebar-fill"></div>
@@ -139,6 +142,9 @@
         <!-- 검색 -->
         <section class="view" id="view-search">
           <div class="store-banner">
+            <div class="segmented store-mode" id="searchMode">
+              <button data-mode="music" class="on">음악</button><button data-mode="video">동영상</button>
+            </div>
             <div class="store-title">
               <h1 id="searchTitle">YouTube Music</h1>
               <p id="searchSub">아티스트, 앨범, 곡 이름을 검색하거나 YouTube 링크를 붙여넣으세요.</p>
@@ -152,6 +158,38 @@
           <div class="results" id="results"></div>
           <div class="spinner-wrap" id="searchSpin" hidden><div class="spinner"></div><span>검색 중…</span></div>
         </section>
+
+        <!-- 동영상 보관함 -->
+        <section class="view" id="view-videos">
+          <div class="ads-banner">
+            <div>
+              <h1>동영상</h1>
+              <p>받은 YouTube 영상과 Apple 광고가 여기 모입니다. 모두 아이팟 규격으로 변환돼 있어서, 영상을 지원하는 아이팟에는 동기화할 때 함께 들어가 <b>동영상 → 영화</b>에 나타납니다.</p>
+            </div>
+            <div class="ads-actions">
+              <button class="pill dark" data-goto-video="search">YouTube에서 찾기</button>
+              <button class="pill dark" id="vidReveal">폴더 열기</button>
+            </div>
+          </div>
+          <div class="ads-grid" id="vidGrid"></div>
+        </section>
+
+        <!-- Apple 레전드 광고 -->
+        <section class="view" id="view-ads">
+          <div class="ads-banner">
+            <div>
+              <h1>Apple 레전드 광고</h1>
+              <p>해머가 스크린을 깨던 1984년부터, 하얀 이어폰 줄이 춤추던 실루엣 광고까지. 받아 두면 여기서 보고, 영상을 지원하는 아이팟(비디오·클래식·나노 3세대 이상)에는 동기화할 때 함께 들어가 <b>동영상 → 영화</b>에 나타납니다.</p>
+            </div>
+            <div class="ads-actions">
+              <button class="pill dark" id="adsGetAll">모두 받기</button>
+              <button class="pill dark" id="adsReveal">폴더 열기</button>
+            </div>
+          </div>
+          <div class="ads-grid" id="adsGrid"></div>
+          <p class="ads-note">영상은 YouTube에 올라온 공개 영상을 yt-dlp로 받아 아이팟 규격(H.264 Baseline · 640×480 이하 · AAC)으로 변환합니다. 개인 감상용으로만 써 주세요. 광고의 저작권은 Apple Inc.에 있습니다.</p>
+        </section>
+
 
         <!-- Apple Music으로 보내기 (아이팟 터치·아이폰) -->
         <section class="view" id="view-applemusic">
@@ -344,6 +382,14 @@
         <select id="setModel"></select><button class="pill" id="setMakeVirtual">만들기</button></div>
       <p class="sheet-note" id="setBackend"></p>
       <div class="sheet-btns"><button class="aqua" id="setDone">완료</button></div>
+    </div>
+  </div>
+
+  <!-- 영상 플레이어 -->
+  <div class="vp-back" id="vpBack" hidden>
+    <div class="vp-frame">
+      <div class="vp-bar"><b id="vpTitle"></b><button class="vp-close" id="vpClose" title="닫기">✕</button></div>
+      <video id="vpVideo" controls playsinline></video>
     </div>
   </div>
 

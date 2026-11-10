@@ -79,6 +79,8 @@ function show(view, opts = {}) {
   if (view === 'downloads') renderDownloads();
   if (view === 'device') renderDevice(opts.refresh);
   if (view === 'applemusic') renderAppleMusic();
+  if (view === 'ads') loadAds();
+  if (view === 'videos') loadVideoLibrary();
   updateStatus();
 }
 
@@ -277,6 +279,7 @@ $('#searchInput').addEventListener('keydown', async (e) => {
   if (e.key !== 'Enter') return;
   const q = e.target.value.trim();
   if (!q) return;
+  if (state.searchMode === 'video' && !isUrl(q)) return searchVideos(q);
   show('search');
   $('#searchSpin').hidden = false;
   $('#results').innerHTML = '';
@@ -1087,6 +1090,253 @@ $('#amAuto').onchange = async (e) => (state.settings = await C.settings.set({ mu
 C.music.onAdded((r) => r.added && toast(`Apple Music ‘${r.playlist}’에 추가됨`));
 C.music.onError((m) => toast('Apple Music 추가 실패: ' + m));
 
+/* ───────── Apple 레전드 광고 ───────── */
+state.ads = [];
+async function loadAds() {
+  state.ads = await C.ads.list();
+  renderAds();
+}
+function adFoot(a) {
+  const j = a.job;
+  if (j && (j.state === 'downloading' || j.state === 'converting')) {
+    const label = j.state === 'downloading' ? '받는 중' : '아이팟용으로 변환 중';
+    return `<span class="ad-bar"><i style="width:${Math.round((j.progress || 0) * 100)}%"></i></span><span class="st">${label}</span>`;
+  }
+  if (a.file) {
+    return `<button class="pill dark" data-play="${h(a.id)}">▶ 보기</button><button class="pill dark" data-remove="${h(a.id)}">삭제</button><span class="st">아이팟 동기화 때 함께 들어갑니다</span>`;
+  }
+  const err = j?.state === 'error' ? `<span class="st err" title="${h(j.error || '')}">받기 실패 — 다시 시도</span>` : '';
+  return `<button class="pill dark" data-get="${h(a.id)}">받기</button>${err}`;
+}
+function renderAds() {
+  $('#adsGrid').innerHTML = state.ads
+    .map(
+      (a) => `<div class="ad-card ${a.file ? 'have' : ''}" data-id="${h(a.id)}">
+        <div class="ad-screen" data-play="${a.file ? h(a.id) : ''}">
+          <img src="${h(a.thumb)}" alt="" loading="lazy" />
+          <span class="ad-year">${a.year}</span>
+          ${a.file ? '<span class="ad-badge">받음</span><span class="ad-play"></span>' : ''}
+        </div>
+        <div class="ad-meta">
+          <h3>${h(a.title)}</h3>
+          <div class="prod">${h(a.product)}${a.by ? ' · ' + h(a.by) : ''}</div>
+          <p>${h(a.desc)}</p>
+        </div>
+        <div class="ad-foot">${adFoot(a)}</div>
+      </div>`
+    )
+    .join('');
+  const left = state.ads.filter((a) => !a.file).length;
+  $('#adsGetAll').textContent = left ? `모두 받기 (${left}편)` : '모두 받았습니다';
+  $('#adsGetAll').disabled = !left;
+}
+async function getAd(id) {
+  try {
+    await C.ads.download(id);
+    const a = state.ads.find((x) => x.id === id);
+    toast(`받기 완료: ${a?.title || ''}`);
+  } catch (e) {
+    toast('광고 받기 실패: ' + e.message.split('\n').pop());
+  }
+  loadAds();
+}
+$('#adsGrid').addEventListener('click', async (e) => {
+  const get = e.target.closest('[data-get]');
+  const play = e.target.closest('[data-play]');
+  const rm = e.target.closest('[data-remove]');
+  if (get) return getAd(get.dataset.get);
+  if (rm) {
+    const a = state.ads.find((x) => x.id === rm.dataset.remove);
+    if (a && confirm(`'${a.title}' 영상을 휴지통으로 옮길까요?`)) {
+      await C.ads.remove(a.id);
+      loadAds();
+    }
+    return;
+  }
+  if (play && play.dataset.play) {
+    const a = state.ads.find((x) => x.id === play.dataset.play);
+    if (a?.file) openVideo(a);
+  }
+});
+$('#adsGetAll').onclick = async () => {
+  for (const a of state.ads.filter((x) => !x.file)) await getAd(a.id);
+};
+$('#adsReveal').onclick = () => C.ads.reveal();
+C.ads.onUpdate((u) => {
+  const a = state.ads.find((x) => x.id === u.id);
+  if (!a) return;
+  a.job = u;
+  const card = document.querySelector(`.ad-card[data-id="${CSS.escape(u.id)}"] .ad-foot`);
+  if (card) card.innerHTML = adFoot(a);
+});
+C.ads.onChanged(() => state.view === 'ads' && loadAds());
+
+// 영상 플레이어
+function openVideo(a) {
+  if (!audio.paused) audio.pause();
+  $('#vpTitle').textContent = [a.title + (a.year ? ` (${a.year})` : ''), a.product].filter(Boolean).join(' — ');
+  const v = $('#vpVideo');
+  v.src = C.fileUrl(a.file);
+  $('#vpBack').hidden = false;
+  v.play().catch(() => {});
+}
+function closeVideo() {
+  const v = $('#vpVideo');
+  v.pause();
+  v.removeAttribute('src');
+  v.load();
+  $('#vpBack').hidden = true;
+}
+$('#vpClose').onclick = closeVideo;
+$('#vpBack').addEventListener('click', (e) => e.target.id === 'vpBack' && closeVideo());
+document.addEventListener('keydown', (e) => e.key === 'Escape' && !$('#vpBack').hidden && closeVideo());
+
+/* ───────── YouTube 동영상 검색·받기 / 동영상 보관함 ───────── */
+state.searchMode = 'music';
+state.vresults = [];
+state.vlib = [];
+const fmtViews = (n) => (n >= 1e8 ? `${(n / 1e8).toFixed(1)}억회` : n >= 1e4 ? `${Math.round(n / 1e4)}만회` : n ? `${n}회` : '');
+
+$('#searchMode').addEventListener('click', (e) => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  state.searchMode = b.dataset.mode;
+  $$('#searchMode button').forEach((x) => x.classList.toggle('on', x === b));
+  $('#searchInput').placeholder = state.searchMode === 'video' ? 'YouTube 동영상 검색 또는 URL' : 'YouTube Music 검색 또는 URL';
+  $('#searchTitle').textContent = state.searchMode === 'video' ? 'YouTube 동영상' : 'YouTube Music';
+  $('#searchSub').textContent =
+    state.searchMode === 'video'
+      ? '라이브 클립, 뮤직비디오, 무엇이든. 받으면 아이팟에서 볼 수 있는 영상으로 바꿔 둡니다.'
+      : '아티스트, 앨범, 곡 이름을 검색하거나 YouTube 링크를 붙여넣으세요.';
+  $('#coverflow').hidden = true;
+  $('#results').innerHTML = '';
+  $('#searchInput').focus();
+});
+
+function vFoot(v) {
+  const j = v.job;
+  if (j && (j.state === 'downloading' || j.state === 'converting')) {
+    return `<span class="ad-bar"><i style="width:${Math.round((j.progress || 0) * 100)}%"></i></span><span class="st">${j.state === 'downloading' ? '받는 중' : '변환 중'}</span>`;
+  }
+  if (v.file) return `<button class="pill" data-vplay="${h(v.videoId)}">▶ 보기</button><span class="st">받음</span>`;
+  const err = j?.state === 'error' ? `<span class="st" style="color:#b0331f" title="${h(j.error || '')}">실패 — 다시 시도</span>` : '';
+  return `<button class="buy" data-vget="${h(v.videoId)}">받기</button>${err}`;
+}
+function vCard(v) {
+  return `<div class="vcard ${v.file ? 'have' : ''}" data-vid="${h(v.videoId)}">
+    <div class="vthumb" ${v.file ? `data-vplay="${h(v.videoId)}"` : ''}><img src="${h(v.thumb)}" alt="" loading="lazy" />${
+      v.duration ? `<span class="vdur">${fmtTime(v.duration)}</span>` : ''
+    }${v.file ? '<span class="ad-play"></span>' : ''}</div>
+    <h4 title="${h(v.title)}">${h(v.title)}</h4>
+    <div class="vsub">${h([v.channel, fmtViews(v.views)].filter(Boolean).join(' · '))}</div>
+    <div class="ad-foot">${vFoot(v)}</div>
+  </div>`;
+}
+
+async function searchVideos(q) {
+  show('search');
+  $('#coverflow').hidden = true;
+  $('#results').innerHTML = '';
+  $('#searchSpin').hidden = false;
+  try {
+    state.vresults = await C.videos.search(q);
+    $('#searchTitle').textContent = `“${q}” 동영상`;
+    $('#searchSub').textContent = `${state.vresults.length}개 · 받으면 아이팟용 영상(640×480 이하)으로 변환합니다`;
+    $('#results').innerHTML = state.vresults.length
+      ? `<div class="vgrid" id="vResults">${state.vresults.map(vCard).join('')}</div>`
+      : '<div class="paste-hint">결과가 없습니다.</div>';
+  } catch (err) {
+    $('#results').innerHTML = `<div class="paste-hint">검색 실패: ${h(err.message)}</div>`;
+  } finally {
+    $('#searchSpin').hidden = true;
+  }
+}
+
+$('#results').addEventListener('click', async (e) => {
+  const get = e.target.closest('[data-vget]');
+  const play = e.target.closest('[data-vplay]');
+  if (get) {
+    const v = state.vresults.find((x) => x.videoId === get.dataset.vget);
+    if (!v) return;
+    try {
+      await C.videos.download(v);
+      toast(`영상 받기 완료: ${v.title}`);
+    } catch (err) {
+      toast('영상 받기 실패: ' + String(err.message).split('\n').pop());
+    }
+  } else if (play) {
+    const v = state.vresults.find((x) => x.videoId === play.dataset.vplay);
+    if (v?.file) openVideo({ title: v.title, year: '', product: v.channel, file: v.file });
+  }
+});
+
+C.videos.onUpdate((u) => {
+  if (!u.key.startsWith('yt:')) return;
+  const id = u.key.slice(3);
+  const v = state.vresults.find((x) => x.videoId === id);
+  if (!v) return;
+  v.job = u;
+  if (u.state === 'done') v.file = u.file;
+  const card = document.querySelector(`.vcard[data-vid="${CSS.escape(id)}"]`);
+  if (card) card.outerHTML = vCard(v);
+});
+C.videos.onChanged(() => {
+  refreshVideoCount();
+  if (state.view === 'videos') loadVideoLibrary();
+});
+C.ads.onChanged(() => refreshVideoCount());
+
+// 동영상 보관함
+async function refreshVideoCount() {
+  state.vlib = await C.videos.library();
+  $('#cntVideos').textContent = state.vlib.length || '';
+}
+async function loadVideoLibrary() {
+  await refreshVideoCount();
+  // 원본 주소가 없는 광고 영상은 광고 목록에서 썸네일을 찾는다
+  if (state.vlib.some((v) => !v.thumb)) {
+    const ads = state.ads.length ? state.ads : (state.ads = await C.ads.list());
+    state.vlib.forEach((v) => {
+      if (v.thumb) return;
+      const ad = ads.find((a) => a.file === v.file || a.title === v.title);
+      if (ad) v.thumb = `https://i.ytimg.com/vi/${ad.videoId}/mqdefault.jpg`;
+    });
+  }
+  $('#vidGrid').innerHTML = state.vlib.length
+    ? state.vlib
+        .map(
+          (v, i) => `<div class="vcard have" data-i="${i}">
+        <div class="vthumb ${v.thumb ? '' : 'noimg'}" data-lplay="${i}">${v.thumb ? `<img src="${h(v.thumb)}" alt="" loading="lazy" />` : ''}${
+            v.duration ? `<span class="vdur">${fmtTime(v.duration)}</span>` : ''
+          }<span class="ad-play"></span></div>
+        <h4 title="${h(v.title)}">${h(v.title)}</h4>
+        <div class="vsub">${h([v.folder, v.artist, v.year].filter(Boolean).join(' · '))} · ${fmtBytes(v.size)}</div>
+        <div class="ad-foot"><button class="pill dark" data-lplay="${i}">▶ 보기</button><button class="pill dark" data-lrm="${i}">삭제</button></div>
+      </div>`
+        )
+        .join('')
+    : '<div class="vempty">아직 받은 영상이 없습니다. YouTube Music 검색 화면에서 <b>동영상</b>으로 바꿔 찾아보거나, 엑스트라의 <b>Apple 광고</b>를 받아 보세요.</div>';
+}
+$('#vidGrid').addEventListener('click', async (e) => {
+  const play = e.target.closest('[data-lplay]');
+  const rm = e.target.closest('[data-lrm]');
+  if (play) {
+    const v = state.vlib[play.dataset.lplay];
+    if (v) openVideo({ title: v.title, year: v.year, product: v.artist || v.folder, file: v.file });
+  } else if (rm) {
+    const v = state.vlib[rm.dataset.lrm];
+    if (v && confirm(`'${v.title}' 영상을 휴지통으로 옮길까요?`)) {
+      await C.videos.remove(v.file);
+      loadVideoLibrary();
+    }
+  }
+});
+$('#vidReveal').onclick = () => C.ads.reveal();
+document.querySelector('[data-goto-video]').onclick = () => {
+  show('search');
+  if (state.searchMode !== 'video') document.querySelector('#searchMode [data-mode=video]').click();
+};
+
 /* ───────── 도구 업데이트 (왼쪽 아래) ───────── */
 let toolsState = null;
 function ago(ts) {
@@ -1160,6 +1410,7 @@ setInterval(() => toolsState && !toolsState.checking && ($('#tpWhen').textConten
   state.settings = await C.settings.get();
   state.masterVersion = state.settings.masterVersion;
   renderTools(await C.tools.state());
+  refreshVideoCount();
   state.ios = await C.ios.devices();
   renderIosList();
   C.tools.onState(renderTools);

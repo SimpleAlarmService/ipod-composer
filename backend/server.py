@@ -56,9 +56,9 @@ def find_fpcalc() -> str:
     return ""
 
 
-def engine_options(**kw) -> EngineOptions:
+def engine_options(video: bool = False, **kw) -> EngineOptions:
     return EngineOptions(
-        supports_video=False,
+        supports_video=video,
         supports_podcast=False,
         supports_photo=False,
         fpcalc_path=find_fpcalc(),
@@ -228,6 +228,14 @@ def _progress_cb(p) -> None:
           message=msg)
 
 
+def _device_supports_video(ipod) -> bool:
+    try:
+        caps = ipod.capabilities
+        return bool(getattr(caps, "supports_video", False))
+    except Exception:
+        return False
+
+
 def _mapping_source_hints(plan) -> dict[int, str]:
     """db_track_id → 보관함 기준 상대 경로(source_path_hint)"""
     out: dict[int, str] = {}
@@ -253,11 +261,17 @@ def m_plan(params: dict) -> dict:
         ensure_database(ipod)
         ipod = pypodlib.connect(path)
         lib = ipod.library(reload=True)
-    opts = engine_options(allowed_paths=frozenset(allowed) if allowed else None)
+    # 영상 폴더(Apple 광고 등)가 있고 기기가 영상을 지원하면 함께 동기화한다
+    video_dir = params.get("videoDir")
+    folders = [music]
+    use_video = bool(video_dir and os.path.isdir(video_dir) and _device_supports_video(ipod))
+    if use_video:
+        folders.append(video_dir)
+    opts = engine_options(video=use_video, allowed_paths=frozenset(allowed) if allowed else None)
     out = SyncEngine().run(EngineRequest(
         operation=EngineOperation.PLAN,
         ipod_path=path,
-        pc_folders=(music,),
+        pc_folders=tuple(folders),
         ipod_tracks=tuple(t.data for t in lib.tracks) if lib else (),
         existing_playlists=tuple(p.data for p in lib.all_playlists) if lib else (),
         options=opts,
@@ -283,7 +297,7 @@ def m_plan(params: dict) -> dict:
         plan.to_remove = keep
         plan.playlists_to_remove = []
     token = uuid.uuid4().hex
-    _plans[token] = {"plan": plan, "path": path, "device_info": ipod.info}
+    _plans[token] = {"plan": plan, "path": path, "device_info": ipod.info, "video": use_video}
     st = plan.storage
     return {
         "token": token,
@@ -314,7 +328,7 @@ def m_execute(params: dict) -> dict:
         operation=EngineOperation.EXECUTE,
         ipod_path=entry["path"],
         plan=entry["plan"],
-        options=engine_options(),
+        options=engine_options(video=entry.get("video", False)),
         device_info=entry["device_info"],
         progress_callback=_progress_cb,
         is_cancelled=_cancel.is_set,

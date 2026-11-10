@@ -8,6 +8,8 @@ const { parseLrc, setExtraProvider } = require('./lyrics');
 const backend = require('./backend');
 const { Tools } = require('./tools');
 const musicApp = require('./musicapp');
+const { Ads } = require('./ads');
+const { Videos } = require('./videos');
 const { Downloader, checkDeps, refreshLyrics, refreshCover, imageDims, MASTER_VERSION } = require('./downloader');
 
 // 앱 이름을 'iPod Composer'로 바꿨지만 설정 폴더는 예전 'Composer' 그대로 쓴다 (설정·가상 기기 유지)
@@ -19,6 +21,7 @@ nativeTheme.themeSource = 'light'; // 2010년대 스큐어모픽은 라이트 �
 const settingsFile = () => path.join(app.getPath('userData'), 'settings.json');
 const defaults = () => ({
   musicDir: path.join(os.homedir(), 'Music', 'Composer'),
+  videoDir: path.join(os.homedir(), 'Movies', 'iPod Composer'), // Apple 광고 등 영상
   concurrency: 2,
   quality: '0',
   writeLrc: true,
@@ -38,6 +41,7 @@ function loadSettings() {
     settings = defaults();
   }
   if (process.env.COMPOSER_MUSIC_DIR) settings.musicDir = process.env.COMPOSER_MUSIC_DIR;
+  if (process.env.COMPOSER_VIDEO_DIR) settings.videoDir = process.env.COMPOSER_VIDEO_DIR;
   fs.mkdirSync(settings.musicDir, { recursive: true });
 }
 function saveSettings(patch) {
@@ -220,6 +224,7 @@ app.whenReady().then(() => {
         mode: opts.mode || settings.syncMode,
         allowedPaths: opts.allowedPaths || null,
         dryRun: !!opts.planOnly, // 미리 보기는 기기에 아무것도 쓰지 않는다
+        videoDir: settings.videoDir, // 영상을 지원하는 기기면 함께 동기화
       });
       if (opts.planOnly) {
         send('ipod:state', { path: devPath, state: 'idle' });
@@ -350,6 +355,34 @@ app.whenReady().then(() => {
   ipcMain.handle('music:add', async (_e, files) => {
     const targets = files?.length ? files : listLibrary().map((t) => t.file);
     return musicApp.addToMusic(targets);
+  });
+  // ---------- Apple 레전드 광고 ----------
+  const videos = new Videos(() => settings.videoDir);
+  videos.on('update', (u) => send('videos:update', u));
+  videos.on('done', () => send('videos:changed'));
+  const ads = new Ads(videos);
+  ads.on('update', (u) => send('ads:update', u));
+  ads.on('done', () => send('ads:changed'));
+  ipcMain.handle('videos:search', (_e, q) => videos.search(q));
+  ipcMain.handle('videos:download', (_e, v) => videos.downloadYouTube(v).then(() => true));
+  ipcMain.handle('videos:library', () => videos.library());
+  ipcMain.handle('videos:remove', async (_e, file) => {
+    if (file && file.startsWith(settings.videoDir) && fs.existsSync(file)) await shell.trashItem(file);
+    send('videos:changed');
+    return true;
+  });
+  ipcMain.handle('ads:list', () => ads.list());
+  ipcMain.handle('ads:download', (_e, id) => ads.download(id).then(() => true));
+  ipcMain.handle('ads:remove', async (_e, id) => {
+    const ad = ads.list().find((a) => a.id === id);
+    if (ad?.file) await shell.trashItem(ad.file);
+    send('ads:changed');
+    return true;
+  });
+  ipcMain.handle('ads:reveal', () => {
+    const dir = path.join(settings.videoDir, 'Apple 광고');
+    fs.mkdirSync(dir, { recursive: true });
+    shell.openPath(dir);
   });
   ipcMain.handle('library:remaster', (_e, files) => {
     const targets = listLibrary().filter(
