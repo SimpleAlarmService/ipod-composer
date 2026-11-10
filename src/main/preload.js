@@ -50,6 +50,18 @@ contextBridge.exposeInMainWorld('composer', {
     onChanged: on('ads:changed'),
   },
   music: { add: inv('music:add'), onAdded: on('music:added'), onError: on('music:error') },
+  games: {
+    info: inv('games:info'),
+    download: inv('games:download'),
+    importArchive: inv('games:import'),
+    cancel: inv('games:cancel'),
+    guide: inv('games:guide'),
+    release: inv('games:release'),
+    utm: inv('games:utm'),
+    device: inv('games:device'),
+    sync: inv('games:sync'),
+    onProgress: on('games:progress'),
+  },
   ipod: {
     devices: inv('ipod:devices'),
     scan: inv('ipod:scan'),

@@ -10,6 +10,7 @@ const { Tools } = require('./tools');
 const musicApp = require('./musicapp');
 const { Ads } = require('./ads');
 const { Videos } = require('./videos');
+const { Games, PROJECT: GAMES_PROJECT, RELEASE_URL: GAMES_RELEASE, gameSupport, deviceState: gameDeviceState } = require('./games');
 const { Downloader, checkDeps, refreshLyrics, refreshCover, imageDims, MASTER_VERSION } = require('./downloader');
 
 // 앱 이름을 'iPod Composer'로 바꿨지만 설정 폴더는 예전 'Composer' 그대로 쓴다 (설정·가상 기기 유지)
@@ -198,7 +199,7 @@ app.whenReady().then(() => {
     (scanning ||= backend
       .call('scan', { extraPaths: settings.virtualIpods })
       .then((list) => {
-        devices = list;
+        devices = list.map((device) => ({ ...device, gamesSupport: gameSupport(device) }));
         send('ipod:devices', devices);
         return devices;
       })
@@ -213,8 +214,10 @@ app.whenReady().then(() => {
   setTimeout(scan, 800);
 
   let syncing = false;
+  let gameSyncing = false;
+  const ejecting = new Set();
   async function syncDevice(devPath, opts = {}) {
-    if (syncing) throw new Error('이미 동기화 중입니다');
+    if (syncing || gameSyncing || ejecting.has(devPath)) throw new Error('이미 동기화 또는 꺼내기 작업이 진행 중입니다');
     syncing = true;
     send('ipod:state', { path: devPath, state: 'planning' });
     try {
@@ -255,9 +258,16 @@ app.whenReady().then(() => {
   ipcMain.handle('ipod:sync', (_e, p, opts) => syncDevice(p, opts || {}));
   ipcMain.handle('ipod:cancel', () => backend.call('cancel'));
   ipcMain.handle('ipod:eject', async (_e, p) => {
-    const r = await backend.call('eject', { path: p });
-    setTimeout(scan, 1000);
-    return r;
+    if (gameSyncing) throw new Error('게임 동기화가 끝난 뒤 아이팟을 꺼내세요.');
+    if (ejecting.has(p)) throw new Error('이미 아이팟을 꺼내고 있습니다.');
+    ejecting.add(p);
+    try {
+      const result = await backend.call('eject', { path: p });
+      setTimeout(scan, 1000);
+      return result;
+    } finally {
+      ejecting.delete(p);
+    }
   });
   ipcMain.handle('ipod:models', () => backend.call('models'));
   ipcMain.handle('ipod:createVirtual', async (_e, model) => {
@@ -277,6 +287,41 @@ app.whenReady().then(() => {
       return { ok: true, ...(await backend.call('ping')) };
     } catch (e) {
       return { ok: false, error: backend.lastError || e.message };
+    }
+  });
+
+  const games = new Games(path.join(app.getPath('userData'), 'Clickwheel Games'), (progress) => send('games:progress', progress));
+  const connectedGameDevice = (p) => devices.find((device) => device.path === p && gameSupport(device));
+  ipcMain.handle('games:info', () => games.info());
+  ipcMain.handle('games:download', () => games.prepare());
+  ipcMain.handle('games:import', async () => {
+    const selected = await dialog.showOpenDialog(win, {
+      properties: ['openFile'],
+      filters: [{ name: 'iPod Games Files', extensions: ['7z'] }],
+    });
+    return selected.canceled || !selected.filePaths[0] ? null : games.prepare(selected.filePaths[0]);
+  });
+  ipcMain.handle('games:cancel', () => games.cancel());
+  ipcMain.handle('games:guide', () => shell.openExternal(GAMES_PROJECT + '#how-to-use'));
+  ipcMain.handle('games:release', () => shell.openExternal(GAMES_RELEASE));
+  ipcMain.handle('games:utm', () => shell.openExternal('https://mac.getutm.app/'));
+  ipcMain.handle('games:device', async (_e, p) => {
+    const device = connectedGameDevice(p);
+    if (!device) throw new Error('지원되는 실제 아이팟을 연결하세요.');
+    return gameDeviceState(device);
+  });
+  ipcMain.handle('games:sync', async (_e, { path: p, mountKey, ids, authorized } = {}) => {
+    if (authorized !== true) throw new Error('iTunes에서 이 아이팟의 게임 인증을 먼저 마쳐 주세요.');
+    if (syncing || gameSyncing || ejecting.has(p)) throw new Error('진행 중인 아이팟 작업이 끝난 뒤 다시 시도하세요.');
+    gameSyncing = true;
+    try {
+      await scan();
+      const device = connectedGameDevice(p);
+      if (!device) throw new Error('지원되는 실제 아이팟을 연결하세요.');
+      return await games.sync(device, mountKey, ids);
+    } finally {
+      gameSyncing = false;
+      scan();
     }
   });
 

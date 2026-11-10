@@ -75,6 +75,7 @@
         <a class="src" data-view="applemusic"><i class="ico ico-am"></i><span>Apple Music</span></a>
         <div class="src-head">엑스트라</div>
         <a class="src" data-view="ads"><i class="ico ico-film"></i><span>Apple 광고</span></a>
+        <a class="src" data-view="games" href="#games"><i class="ico ico-games"></i><span>Games</span></a>
         <div class="src-head">스토어</div>
         <a class="src" data-view="search"><i class="ico ico-store"></i><span>iTube Store</span></a>
         <div class="sidebar-fill"></div>
@@ -190,6 +191,73 @@
           <p class="ads-note">영상은 YouTube에 올라온 공개 영상을 yt-dlp로 받아 아이팟 규격(H.264 Baseline · 640×480 이하 · AAC)으로 변환합니다. 개인 감상용으로만 써 주세요. 광고의 저작권은 Apple Inc.에 있습니다.</p>
         </section>
 
+
+        <!-- 클릭 휠 게임 -->
+        <section class="view" id="view-games">
+          <header class="games-hero metal">
+            <div class="games-cartridge" aria-hidden="true">
+              <div class="games-cartridge-label"><svg viewBox="0 0 40 31"><path d="M5 0h30v5h5v21h-5v5H5v-5H0V5h5zm4 12v4H5v4h4v4h4v-4h4v-4h-4v-4zm19 2v5h5v-5zm-6 7v5h5v-5z" fill="currentColor" fill-rule="evenodd"/></svg></div>
+              <div class="games-cartridge-ridge"></div>
+            </div>
+            <div class="games-hero-copy">
+              <p class="games-kicker">iPOD EXTRAS <span> / </span> CLICK WHEEL</p>
+              <h1>Games</h1>
+              <p>클릭 휠로 즐기던 게임을 아이팟에 담으세요.</p>
+            </div>
+            <div class="games-lcd" aria-hidden="true">
+              <span>GAME LIBRARY</span><b id="gamesLibraryCount">––</b><small id="gamesLibraryLabel">CLICK WHEEL</small>
+            </div>
+          </header>
+          <div class="games-workspace">
+            <div class="games-catalog">
+              <div class="games-toolbar metal">
+                <label class="games-check-all"><input id="gamesAll" type="checkbox" disabled /> 전체 선택</label>
+                <input id="gamesSearch" type="search" placeholder="게임 검색" aria-label="게임 검색" spellcheck="false" />
+              </div>
+              <div class="games-table-wrap">
+                <table class="games-table">
+                  <thead><tr><th scope="col" colspan="2">클릭 휠 게임</th><th scope="col">크기</th><th scope="col">상태</th></tr></thead>
+                  <tbody id="gamesRows"></tbody>
+                </table>
+                <p class="games-empty" id="gamesEmpty" hidden></p>
+              </div>
+            </div>
+            <div class="games-setup">
+              <section class="games-panel">
+                <h2><span>1</span> 게임 팩</h2>
+                <div class="games-panel-body">
+                  <p id="gamesPackStatus">보존 프로젝트의 게임 팩을 확인하고 있습니다.</p>
+                  <div class="games-pack-actions">
+                    <button class="pill" id="gamesDownload" disabled>게임 팩 받기</button>
+                    <button class="games-link" id="gamesImport" disabled>파일 선택</button>
+                    <button class="games-link" id="gamesCancel" hidden>취소</button>
+                  </div>
+                </div>
+              </section>
+              <section class="games-panel">
+                <h2><span>2</span> 아이팟</h2>
+                <div class="games-panel-body">
+                  <select id="gamesDevice" aria-label="게임을 동기화할 아이팟"></select>
+                  <p id="gamesDeviceStatus">지원 기종을 USB로 연결하세요.</p>
+                  <label class="games-auth">
+                    <input id="gamesAuthorized" type="checkbox" disabled />
+                    <span>이 아이팟을 iTunes에서 인증했습니다</span>
+                  </label>
+                  <button class="games-link" id="gamesGuide" aria-haspopup="dialog">인증 방법 보기</button>
+                </div>
+              </section>
+              <p class="games-credit"><button class="games-link" id="gamesRelease">Clickwheel Games Preservation Project ↗</button></p>
+            </div>
+          </div>
+          <footer class="games-footer metal">
+            <div class="games-summary">
+              <strong id="gamesSelection">선택한 게임 없음</strong>
+              <span id="gamesMessage" role="status"></span>
+            </div>
+            <progress id="gamesProgress" max="1" aria-label="게임 작업 진행률" hidden></progress>
+            <button class="aqua" id="gamesSync" disabled>게임 동기화</button>
+          </footer>
+        </section>
 
         <!-- Apple Music으로 보내기 (아이팟 터치·아이폰) -->
         <section class="view" id="view-applemusic">
@@ -359,6 +427,45 @@
       <div class="sb-right"></div>
     </footer>
   </div>
+
+  <dialog class="games-guide metal" id="gamesAuthGuide" aria-labelledby="gamesGuideTitle" aria-describedby="gamesGuideIntro">
+    <header class="games-guide-head">
+      <div class="games-guide-lock" aria-hidden="true">
+        <svg viewBox="0 0 28 30"><path d="M8 13V8a6 6 0 0 1 12 0v5" fill="none" stroke="currentColor" stroke-width="2.8"/><path d="M5 12h18a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V14a2 2 0 0 1 2-2zm9 4a2 2 0 0 0-1 3.7V23h2v-3.3A2 2 0 0 0 14 16z" fill="currentColor" fill-rule="evenodd"/></svg>
+      </div>
+      <div><p>클릭 휠 게임 · 처음 한 번</p><h2 id="gamesGuideTitle">아이팟 게임 인증</h2></div>
+    </header>
+    <div class="games-guide-body">
+      <p class="games-guide-lcd" id="gamesGuideIntro">처음에는 보존 프로젝트의 iTunes로 이 아이팟에 게임 인증 정보를 넣어야 합니다. 그다음부터는 Games 메뉴에서 게임을 복사할 수 있습니다.</p>
+      <ol class="games-guide-steps">
+        <li>
+          <h3>Mac에서 가상 머신 준비하기</h3>
+          <p>UTM 공식 사이트에서 Mac용 UTM을 설치하세요. 보존 프로젝트 v16의 <code>.utm.7z.001</code>, <code>.002</code>, <code>.003</code> 파일을 같은 폴더에 받은 뒤, 분할 압축을 풀 수 있는 앱에서 <code>.001</code>을 여세요. 압축을 풀 공간은 약 10 GB가 필요합니다.</p>
+          <div class="games-guide-links">
+            <button type="button" class="pill" id="gamesGuideUtm">UTM 받기 ↗</button>
+            <button type="button" class="pill" id="gamesGuideVm">가상 머신 받기 ↗</button>
+          </div>
+        </li>
+        <li>
+          <h3>아이팟을 가상 머신에 연결하기</h3>
+          <p>압축을 푼 <code>.utm</code> 파일을 UTM에서 실행하고 iTunes가 자동으로 열릴 때까지 기다리세요. 아이팟의 디스크 사용이 켜져 있는지 확인한 뒤, Finder에서 아이팟을 꺼내고 UTM의 USB 메뉴에서 같은 아이팟을 선택하세요.</p>
+          <p class="games-guide-note">가상 머신의 Windows에서는 FAT32 형식의 아이팟을 사용합니다. Mac 형식의 아이팟을 재포맷해야 한다면 먼저 데이터를 백업하세요. 재포맷하면 기기의 데이터가 지워집니다.</p>
+        </li>
+        <li>
+          <h3>iTunes의 게임을 5개씩 동기화하기</h3>
+          <p>가상 머신의 iTunes에서 아이팟의 <b>게임</b> 탭을 열고 처음 5개를 선택해 <b>적용</b>을 누르세요. 끝나면 앞의 선택을 해제하고 다음 5개를 적용하세요. iTunes 목록의 모든 게임이 한 번씩 동기화될 때까지 반복하세요.</p>
+        </li>
+        <li>
+          <h3>Mac에 다시 연결하고 게임 복사하기</h3>
+          <p>가상 머신의 iTunes에서 아이팟을 꺼낸 뒤 UTM의 USB 연결을 해제하고 Mac에 다시 연결하세요. Games에서 인증 확인란을 체크하고 원하는 게임을 선택한 뒤 <b>게임 동기화</b>를 누르세요.</p>
+        </li>
+      </ol>
+    </div>
+    <form class="games-guide-footer" method="dialog">
+      <button type="button" class="games-link" id="gamesGuideSource">보존 프로젝트 원문 보기 ↗</button>
+      <button class="aqua" autofocus>닫기</button>
+    </form>
+  </dialog>
 
   <!-- 설정 시트 -->
   <div class="sheet-back" id="sheetBack" hidden>

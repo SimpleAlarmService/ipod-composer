@@ -81,6 +81,7 @@ function show(view, opts = {}) {
   if (view === 'applemusic') renderAppleMusic();
   if (view === 'ads') loadAds();
   if (view === 'videos') loadVideoLibrary();
+  if (view === 'games') loadGames();
   updateStatus();
 }
 
@@ -92,6 +93,7 @@ $('#sidebar').addEventListener('click', (e) => {
   }
   const a = e.target.closest('.src, .src-dev');
   if (!a) return;
+  e.preventDefault();
   if (a.dataset.view === 'device') state.device = a.dataset.path;
   show(a.dataset.view, { refresh: true });
   if (a.dataset.view === 'search') $('#searchInput').focus();
@@ -152,7 +154,7 @@ $('#songsTable tbody').addEventListener('dblclick', (e) => {
   if (tr) playList(state.library, Number(tr.dataset.i));
 });
 document.addEventListener('keydown', async (e) => {
-  if (e.target.matches('input, select')) return;
+  if (e.target.matches('input, select, #view-games button') || e.target.closest('#gamesAuthGuide')) return;
   if (e.code === 'Space') {
     e.preventDefault();
     togglePlay();
@@ -527,6 +529,7 @@ C.ipod.onDevices((list) => {
     if (!list.some((d) => d.path === state.device)) show('songs');
     else renderDevice(false);
   }
+  if (state.view === 'games') refreshGameDevice();
 });
 C.ipod.onError((m) => console.warn('ipod', m));
 
@@ -1404,6 +1407,192 @@ $('#tpBtn').onclick = async () => {
   }
 };
 setInterval(() => toolsState && !toolsState.checking && ($('#tpWhen').textContent = ago(toolsState.lastCheck)), 60000);
+
+/* ───────── 클릭 휠 게임 ───────── */
+const gameUI = { info: null, path: '', device: null, selected: new Set(), busy: false, checking: false, request: 0 };
+const gameSearch = $('#gamesSearch');
+const gameDeviceSelect = $('#gamesDevice');
+const gameAuth = $('#gamesAuthorized');
+const gameRows = $('#gamesRows');
+const gameAll = $('#gamesAll');
+const gameProgress = $('#gamesProgress');
+const gameMessage = (message) => { $('#gamesMessage').textContent = message; };
+
+function visibleGames() {
+  const query = gameSearch.value.trim().toLowerCase();
+  return (gameUI.info?.catalog || []).filter((game) => `${game.title} ${game.genre}`.toLowerCase().includes(query));
+}
+
+function gameRowState(game) {
+  if (game.videoOnly && gameUI.device?.support === 'common') return ['기종 제한', 'limited'];
+  if (gameUI.device?.installed.includes(game.id)) return ['복사됨', 'installed'];
+  return [game.videoOnly ? 'Video 전용' : '공통', ''];
+}
+
+function updateGameSelection() {
+  const boxes = $$('input', gameRows).filter((box) => box.dataset.selectable === 'true');
+  const picked = boxes.filter((box) => box.checked).length;
+  gameAll.checked = picked > 0 && picked === boxes.length;
+  gameAll.indeterminate = picked > 0 && picked < boxes.length;
+  gameAll.disabled = gameUI.busy || !boxes.length;
+  const games = (gameUI.info?.catalog || []).filter((game) => gameUI.selected.has(game.id));
+  const bytes = games.reduce((sum, game) => sum + game.bytes, 0);
+  $('#gamesSelection').textContent = games.length ? `${games.length}개 선택 · ${fmtBytes(bytes)}` : '선택한 게임 없음';
+  $('#gamesSync').disabled = !games.length || !gameUI.info?.ready || !gameAuth.checked
+    || !gameUI.device?.hasAuth || gameUI.busy || gameUI.checking;
+}
+
+function renderGames() {
+  const { info, device, busy, checking, selected } = gameUI;
+  $('#gamesLibraryCount').textContent = info ? String(info.catalog.length).padStart(2, '0') : '––';
+  $('#gamesLibraryLabel').textContent = info?.ready ? 'PACK READY' : 'CLICK WHEEL';
+  $('#gamesPackStatus').textContent = info?.ready ? '게임 팩을 사용할 수 있습니다.'
+    : info ? `공식 보존 팩 v16 · ${(info.archiveBytes / 1e9).toFixed(1)} GB` : '보존 프로젝트의 게임 팩을 확인하고 있습니다.';
+  $('#gamesDownload').disabled = $('#gamesImport').disabled = busy || !info;
+  $('#gamesDownload').hidden = $('#gamesImport').hidden = !!info?.ready;
+  gameDeviceSelect.disabled = busy || !gameUI.path;
+  gameAuth.disabled = busy || checking || !device?.hasAuth;
+  $('#gamesDeviceStatus').textContent = checking ? '아이팟의 게임 폴더를 확인 중…'
+    : device?.hasAuth ? '인증 파일이 있습니다. 보존 프로젝트의 iTunes 동기화를 마쳤는지 확인하세요.'
+    : device ? '이 아이팟을 보존 프로젝트의 iTunes에서 먼저 인증하세요.'
+    : gameUI.path ? '게임 폴더를 확인할 수 없습니다.'
+    : 'iPod video 5/5.5세대, classic 6~7세대, nano 3~5세대를 USB로 연결하세요.';
+
+  for (const game of info?.catalog || []) {
+    if (gameRowState(game)[1]) selected.delete(game.id);
+  }
+  const games = visibleGames();
+  gameRows.innerHTML = games.map((game) => {
+    const [label, status] = gameRowState(game);
+    return `<tr class="${status}"><td><input type="checkbox" value="${game.id}" aria-label="${h(game.title)}" data-selectable="${!status}" ${selected.has(game.id) ? 'checked' : ''} ${busy || status ? 'disabled' : ''} /></td>
+      <th scope="row"><span class="games-title">${h(game.title)}</span><small>${h(game.genre)}</small></th>
+      <td>${fmtBytes(game.bytes)}</td><td><span class="games-tag">${label}</span></td></tr>`;
+  }).join('');
+  $('#gamesEmpty').hidden = !!games.length;
+  $('#gamesEmpty').textContent = info ? '검색 결과가 없습니다.' : '게임 목록을 확인하고 있습니다.';
+  updateGameSelection();
+}
+
+async function refreshGameDevice() {
+  const request = ++gameUI.request;
+  const devices = state.devices.filter((device) => device.gamesSupport);
+  const old = gameUI.path;
+  gameUI.path = (devices.find((device) => device.path === old)
+    || devices.find((device) => device.path === state.device) || devices[0])?.path || '';
+  gameDeviceSelect.innerHTML = devices.length
+    ? devices.map((device) => `<option value="${h(device.path)}">${h(device.name)} · ${h(device.displayName)}</option>`).join('')
+    : '<option value="">연결된 지원 기기 없음</option>';
+  gameDeviceSelect.value = gameUI.path;
+  if (old !== gameUI.path) {
+    gameAuth.checked = false;
+    gameUI.device = null;
+  }
+  gameUI.checking = !!gameUI.path;
+  renderGames();
+  const device = gameUI.path ? await C.games.device(gameUI.path).catch(() => null) : null;
+  if (request !== gameUI.request) return;
+  if (device?.mountKey !== gameUI.device?.mountKey || !device?.hasAuth) gameAuth.checked = false;
+  gameUI.device = device;
+  gameUI.checking = false;
+  renderGames();
+}
+
+async function loadGames() {
+  refreshGameDevice();
+  try {
+    gameUI.info = await C.games.info();
+    renderGames();
+  } catch (error) {
+    gameMessage(error.message);
+  }
+}
+
+gameSearch.oninput = renderGames;
+gameRows.onchange = ({ target }) => {
+  if (!target.matches('input')) return;
+  if (target.checked) gameUI.selected.add(target.value);
+  else gameUI.selected.delete(target.value);
+  updateGameSelection();
+};
+gameAll.onchange = () => {
+  for (const box of $$('input[data-selectable="true"]', gameRows)) {
+    box.checked = gameAll.checked;
+    if (box.checked) gameUI.selected.add(box.value);
+    else gameUI.selected.delete(box.value);
+  }
+  updateGameSelection();
+};
+gameDeviceSelect.onchange = () => {
+  gameAuth.checked = false;
+  gameUI.device = null;
+  gameUI.path = gameDeviceSelect.value;
+  gameMessage('');
+  refreshGameDevice();
+};
+gameAuth.onchange = updateGameSelection;
+
+async function gameTask(task, message) {
+  if (gameUI.busy) return;
+  gameUI.busy = true;
+  gameMessage(message);
+  renderGames();
+  try {
+    await task();
+  } catch (error) {
+    const detail = error.message.replace(/^Error invoking remote method '[^']+': (?:Error: )?/, '');
+    gameMessage(/AbortError|operation was aborted/i.test(detail) ? '게임 팩 준비를 취소했습니다.' : detail);
+  } finally {
+    gameUI.busy = false;
+    gameProgress.hidden = $('#gamesCancel').hidden = true;
+    renderGames();
+  }
+}
+
+function prepareGamePack(importLocal) {
+  return gameTask(async () => {
+    const info = await (importLocal ? C.games.importArchive() : C.games.download());
+    if (info) gameUI.info = info;
+    gameMessage(info ? '게임 팩 준비 완료' : '');
+  }, importLocal ? '' : 'GitHub에서 다운로드를 시작합니다…');
+}
+
+$('#gamesDownload').onclick = () => prepareGamePack(false);
+$('#gamesImport').onclick = () => prepareGamePack(true);
+$('#gamesCancel').onclick = () => {
+  $('#gamesCancel').disabled = true;
+  C.games.cancel();
+};
+$('#gamesGuide').onclick = () => {
+  $('#gamesAuthGuide').showModal();
+  $('.games-guide-body').scrollTop = 0;
+};
+$('#gamesGuideUtm').onclick = () => C.games.utm();
+$('#gamesGuideVm').onclick = () => C.games.release();
+$('#gamesGuideSource').onclick = () => C.games.guide();
+$('#gamesRelease').onclick = () => C.games.release();
+$('#gamesSync').onclick = () => {
+  const request = { path: gameUI.path, mountKey: gameUI.device?.mountKey, ids: [...gameUI.selected], authorized: gameAuth.checked };
+  return gameTask(async () => {
+    try {
+      const { added, skipped } = await C.games.sync(request);
+      gameUI.selected.clear();
+      gameMessage(`${added}개 복사 완료${skipped ? ` · ${skipped}개 건너뜀` : ''}. 꺼낸 뒤 아이팟의 엑스트라 → 게임에서 여세요.`);
+    } finally {
+      await refreshGameDevice();
+    }
+  }, '아이팟을 확인 중…');
+};
+
+C.games.onProgress(({ phase, done, total, title }) => {
+  gameProgress.hidden = false;
+  $('#gamesCancel').hidden = phase === 'sync';
+  if (done === 0) $('#gamesCancel').disabled = false;
+  if (total) gameProgress.value = done / total;
+  else gameProgress.removeAttribute('value');
+  if (phase === 'extract') gameMessage('게임 팩 압축을 푸는 중…');
+  else if (phase === 'sync') gameMessage(`${done + 1}/${total} · ${title} 복사 중…`);
+  else gameMessage(`${phase === 'import' ? '파일 확인' : '다운로드'} 중 · ${Math.floor(100 * done / total)}%`);
+});
 
 /* ───────── 시작 ───────── */
 (async () => {
